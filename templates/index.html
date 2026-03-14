@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>France Municipal Elections 2026</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- App CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <span class="site-flag">🇫🇷</span>
+        <div>
+          <h1 class="site-title">France Municipal Elections 2026</h1>
+          <p class="site-subtitle">Tracking all races &mdash; Mayoral contests, first-round projections &amp; live results</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div id="election-status-badge" class="status-badge status-pre"></div>
+        <div class="header-dates">
+          <span class="date-item"><strong>Round 1:</strong> 22 March 2026</span>
+          <span class="date-item"><strong>Round 2:</strong> 29 March 2026</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    <!-- MAP SECTION -->
+    <section class="map-section">
+      <div class="section-header">
+        <h2 class="section-title">Results by Constituency</h2>
+        <div class="map-controls">
+          <button id="btn-overview" class="map-btn active" title="Show département overview">Overview</button>
+          <button id="btn-zoom-major" class="map-btn" title="Zoom to major cities">Major Cities</button>
+          <div class="view-toggle">
+            <label class="toggle-label">
+              <input type="checkbox" id="toggle-mayoral" checked />
+              Highlight Mayoral Races
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map container + side panel -->
+      <div class="map-wrapper">
+        <div id="map" class="map-container"></div>
+
+        <!-- Hover / click panel -->
+        <div id="race-panel" class="race-panel hidden">
+          <button class="panel-close" id="panel-close">&times;</button>
+          <div id="race-panel-content"></div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="map-legend">
+        <span class="legend-label">Winner / Leading party:</span>
+        <div id="legend-items" class="legend-items"></div>
+        <span class="legend-note" id="legend-note">Showing polling projections &mdash; not election results</span>
+      </div>
+    </section>
+
+    <!-- NATIONAL SUMMARY BAR -->
+    <section class="summary-section">
+      <div class="summary-inner">
+        <h3 class="summary-title">Key Races at a Glance</h3>
+        <div id="races-grid" class="races-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWS MONITOR -->
+    <section class="news-section">
+      <div class="section-header">
+        <h2 class="section-title">Election News Monitor</h2>
+        <div class="news-controls">
+          <button class="news-filter-btn active" data-source="all">All Sources</button>
+          <button class="news-filter-btn" data-source="Le Monde">Le Monde</button>
+          <button class="news-filter-btn" data-source="Le Figaro">Le Figaro</button>
+          <button class="news-filter-btn" data-source="Paris Playbook">Paris Playbook</button>
+        </div>
+        <button id="refresh-news" class="refresh-btn" title="Refresh news">&#8635; Refresh</button>
+      </div>
+
+      <div id="news-grid" class="news-grid">
+        <div class="news-loading">
+          <div class="spinner"></div>
+          <p>Loading election news&hellip;</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== TOOLTIP ===== -->
+  <div id="map-tooltip" class="map-tooltip hidden"></div>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>

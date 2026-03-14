@@ -1,0 +1,748 @@
+/* ============================================================
+   France Elections 2026 — 538-inspired stylesheet
+   ============================================================ */
+
+/* --- Fonts & Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #f0ede8;
+  --surface:      #ffffff;
+  --surface-alt:  #f7f5f2;
+  --border:       #ddd9d3;
+  --text-primary: #1a1a1a;
+  --text-secondary:#555;
+  --text-muted:   #888;
+  --accent:       #e05c1b;      /* 538 orange-red */
+  --font:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Party colours */
+  --c-ps:          #E8566C;
+  --c-nfp:         #C0392B;
+  --c-eelv:        #27AE60;
+  --c-lr:          #2980B9;
+  --c-renaissance: #F39C12;
+  --c-rn:          #2C3E7A;
+  --c-pcf:         #E74C3C;
+  --c-dvg:         #F1948A;
+  --c-dvd:         #85C1E9;
+  --c-other:       #95A5A6;
+
+  --radius: 4px;
+  --shadow: 0 1px 4px rgba(0,0,0,.12);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.15);
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header {
+  background: var(--surface);
+  border-bottom: 3px solid var(--text-primary);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-flag { font-size: 2rem; }
+
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.site-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  color: #fff;
+}
+.status-pre      { background: var(--text-muted); }
+.status-round1   { background: #e67e22; animation: pulse 1.5s infinite; }
+.status-round2   { background: #e74c3c; animation: pulse 1.5s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+.header-dates {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.date-item strong { color: var(--text-primary); }
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ============================================================
+   SHARED: SECTION HEADER
+   ============================================================ */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  border-bottom: 3px solid var(--text-primary);
+  padding-bottom: 4px;
+}
+
+/* ============================================================
+   MAP SECTION
+   ============================================================ */
+.map-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.map-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.map-btn {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.map-btn:hover  { border-color: var(--text-primary); color: var(--text-primary); }
+.map-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+
+.view-toggle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.toggle-label input { cursor: pointer; }
+
+/* Map wrapper: map + side panel */
+.map-wrapper {
+  position: relative;
+  display: flex;
+  gap: 0;
+  height: 560px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.map-container {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: #e8e4dc;
+}
+
+/* Side race panel */
+.race-panel {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  transition: width 0.2s ease;
+  position: relative;
+}
+
+.race-panel.hidden { width: 0; border-left: none; }
+
+.panel-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  z-index: 10;
+}
+
+.panel-close:hover { color: var(--text-primary); }
+
+#race-panel-content {
+  padding: 16px;
+}
+
+.panel-city-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.panel-dept {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.panel-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 14px 0 6px;
+}
+
+.panel-incumbent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.party-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.candidate-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+
+.candidate-row:last-child { border-bottom: none; }
+
+.candidate-name  { flex: 1; font-weight: 600; }
+.candidate-party {
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Poll bar chart */
+.poll-bar-wrap {
+  margin-bottom: 10px;
+}
+
+.poll-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 0.78rem;
+}
+
+.poll-bar-label { width: 110px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.poll-bar-track {
+  flex: 1;
+  background: var(--surface-alt);
+  border-radius: 2px;
+  height: 16px;
+  overflow: hidden;
+}
+
+.poll-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.poll-bar-pct {
+  width: 34px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+.runoff-header {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 12px 0 4px;
+}
+
+.runoff-bar {
+  height: 28px;
+  display: flex;
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.runoff-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 8px;
+  transition: width 0.4s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.poll-source {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.panel-note {
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Legend */
+.map-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 0.76rem;
+}
+
+.legend-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-note {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Leaflet tooltip override */
+.map-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(26,26,26,0.92);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  white-space: nowrap;
+  z-index: 2000;
+  max-width: 260px;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.map-tooltip.hidden { display: none; }
+
+/* Mayor star marker */
+.mayor-star-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
+  cursor: pointer;
+}
+
+/* ============================================================
+   RACES GRID (summary bar)
+   ============================================================ */
+.summary-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.summary-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--text-primary);
+  padding-bottom: 4px;
+}
+
+.races-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.race-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+
+.race-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.race-card-header {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.race-card-city { font-size: 0.88rem; font-weight: 800; }
+
+.race-card-incumbent {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.race-card-body { padding: 8px 10px; background: var(--surface-alt); }
+
+.race-card-leader {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.race-card-pct {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.race-card-runoff {
+  height: 6px;
+  display: flex;
+  overflow: hidden;
+  border-radius: 3px;
+  margin-top: 6px;
+}
+
+.race-card-competitiveness {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+.comp-safe     { color: #27ae60; }
+.comp-likely   { color: #f39c12; }
+.comp-tossup   { color: #e74c3c; }
+
+/* ============================================================
+   NEWS SECTION
+   ============================================================ */
+.news-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.news-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.news-filter-btn {
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.news-filter-btn:hover  { border-color: var(--text-secondary); }
+.news-filter-btn.active {
+  background: var(--text-primary);
+  color: #fff;
+  border-color: var(--text-primary);
+}
+
+.refresh-btn {
+  margin-left: auto;
+  font-family: var(--font);
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.refresh-btn:hover { background: var(--surface-alt); color: var(--text-primary); }
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.news-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  transition: box-shadow 0.15s;
+}
+
+.news-card:hover { box-shadow: var(--shadow-lg); }
+
+.news-card-source {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+.source-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.news-card-body { padding: 12px; flex: 1; }
+
+.news-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.news-card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.news-card-title a:hover { text-decoration: underline; color: var(--accent); }
+
+.news-card-summary {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-card-footer {
+  padding: 8px 12px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+}
+
+.translated-tag {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Loading state */
+.news-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--text-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.news-error {
+  grid-column: 1 / -1;
+  padding: 32px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Hidden class */
+.hidden { display: none !important; }
+
+/* ============================================================
+   LEAFLET OVERRIDES
+   ============================================================ */
+.leaflet-container {
+  font-family: var(--font);
+}
+
+.leaflet-control-zoom a {
+  font-family: var(--font);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .main-content { padding: 12px; gap: 20px; }
+  .map-wrapper  { height: 420px; flex-direction: column; }
+  .race-panel   { width: 100%; height: 280px; border-left: none; border-top: 1px solid var(--border); }
+  .races-grid   { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .news-grid    { grid-template-columns: 1fr; }
+  .site-title   { font-size: 1rem; }
+}

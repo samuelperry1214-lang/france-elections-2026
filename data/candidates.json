@@ -1,0 +1,463 @@
+{
+  "election": {
+    "name": "French Municipal Elections 2026",
+    "round1_date": "2026-03-22",
+    "round2_date": "2026-03-29",
+    "description": "Municipal elections across all French communes. Voters elect municipal councils, which then elect the mayor. Cities over 1,000 inhabitants use proportional list voting over two rounds."
+  },
+  "parties": {
+    "PS":         { "name": "Parti Socialiste",           "short": "PS",          "color": "#E8566C", "text_color": "#fff" },
+    "NFP":        { "name": "Nouveau Front Populaire",     "short": "NFP",         "color": "#C0392B", "text_color": "#fff" },
+    "EELV":       { "name": "Europe Écologie Les Verts",   "short": "EELV",        "color": "#27AE60", "text_color": "#fff" },
+    "LR":         { "name": "Les Républicains",            "short": "LR",          "color": "#2980B9", "text_color": "#fff" },
+    "Renaissance":{ "name": "Renaissance / Ensemble",      "short": "Ens.",        "color": "#F39C12", "text_color": "#fff" },
+    "RN":         { "name": "Rassemblement National",      "short": "RN",          "color": "#2C3E7A", "text_color": "#fff" },
+    "PCF":        { "name": "Parti Communiste Français",   "short": "PCF",         "color": "#E74C3C", "text_color": "#fff" },
+    "DVG":        { "name": "Divers Gauche",               "short": "DVG",         "color": "#F1948A", "text_color": "#fff" },
+    "DVD":        { "name": "Divers Droite",               "short": "DVD",         "color": "#85C1E9", "text_color": "#fff" },
+    "Other":      { "name": "Other / Independent",         "short": "Other",       "color": "#95A5A6", "text_color": "#fff" }
+  },
+  "major_races": [
+    {
+      "id": "paris",
+      "name": "Paris",
+      "departement": "75",
+      "type": "major_mayoral",
+      "population": 2161000,
+      "coordinates": [2.3522, 48.8566],
+      "note": "Paris uses a two-tier system: 20 arrondissements each elect a council, feeding into the Paris Council which elects the mayor.",
+      "incumbent": {
+        "name": "Anne Hidalgo",
+        "party": "PS",
+        "since": 2014
+      },
+      "candidates": [
+        { "name": "Anne Hidalgo",    "party": "PS",          "role": "incumbent",   "list": "Paris en Commun" },
+        { "name": "Rachida Dati",    "party": "LR",          "role": "challenger",  "list": "Paris pour Tous" },
+        { "name": "TBD",             "party": "RN",          "role": "challenger",  "list": "Au Service des Parisiens" },
+        { "name": "TBD",             "party": "Renaissance", "role": "challenger",  "list": "Paris Ensemble" },
+        { "name": "David Belliard",  "party": "EELV",        "role": "challenger",  "list": "Paris Écolo" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "PS",           "candidate": "Anne Hidalgo",   "pct": 27 },
+          { "party": "LR",           "candidate": "Rachida Dati",   "pct": 21 },
+          { "party": "RN",           "candidate": "TBD",            "pct": 16 },
+          { "party": "Renaissance",  "candidate": "TBD",            "pct": 14 },
+          { "party": "EELV",         "candidate": "David Belliard", "pct": 12 },
+          { "party": "Other",        "candidate": "Others",         "pct": 10 }
+        ],
+        "round2_projection": [
+          { "party": "PS",  "candidate": "Anne Hidalgo", "pct": 52 },
+          { "party": "LR",  "candidate": "Rachida Dati", "pct": 48 }
+        ],
+        "source": "IFOP / BVA polling aggregate",
+        "date": "2026-02-10",
+        "margin_of_error": 3.5
+      }
+    },
+    {
+      "id": "marseille",
+      "name": "Marseille",
+      "departement": "13",
+      "type": "major_mayoral",
+      "population": 870000,
+      "coordinates": [5.3698, 43.2965],
+      "note": "Marseille has 16 arrondissements grouped into 8 sectors, each electing a council. Historically a PS stronghold, now a key RN battleground.",
+      "incumbent": {
+        "name": "Benoît Payan",
+        "party": "PS",
+        "since": 2021
+      },
+      "candidates": [
+        { "name": "Benoît Payan",       "party": "PS",    "role": "incumbent",  "list": "Marseille en Grand" },
+        { "name": "Stéphane Ravier",    "party": "RN",    "role": "challenger", "list": "Marseille pour Tous" },
+        { "name": "Martine Vassal",     "party": "LR",    "role": "challenger", "list": "Marseille Forte et Unie" },
+        { "name": "TBD",               "party": "Renaissance", "role": "challenger", "list": "Ensemble pour Marseille" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "RN",          "candidate": "Stéphane Ravier",  "pct": 32 },
+          { "party": "PS",          "candidate": "Benoît Payan",     "pct": 26 },
+          { "party": "LR",          "candidate": "Martine Vassal",   "pct": 22 },
+          { "party": "Renaissance", "candidate": "TBD",              "pct": 10 },
+          { "party": "Other",       "candidate": "Others",           "pct": 10 }
+        ],
+        "round2_projection": [
+          { "party": "PS",  "candidate": "Benoît Payan",    "pct": 48 },
+          { "party": "RN",  "candidate": "Stéphane Ravier", "pct": 52 }
+        ],
+        "source": "Harris Interactive / Odoxa aggregate",
+        "date": "2026-02-14",
+        "margin_of_error": 4.0,
+        "note": "Tight three-way race. Runoff outcome highly uncertain."
+      }
+    },
+    {
+      "id": "lyon",
+      "name": "Lyon",
+      "departement": "69",
+      "type": "major_mayoral",
+      "population": 522000,
+      "coordinates": [4.8357, 45.7640],
+      "incumbent": {
+        "name": "Grégory Doucet",
+        "party": "EELV",
+        "since": 2020
+      },
+      "candidates": [
+        { "name": "Grégory Doucet",  "party": "EELV",        "role": "incumbent",  "list": "Lyon en Commun" },
+        { "name": "TBD",             "party": "LR",           "role": "challenger", "list": "Lyon Avenir" },
+        { "name": "TBD",             "party": "RN",           "role": "challenger", "list": "Rassemblement pour Lyon" },
+        { "name": "TBD",             "party": "Renaissance",  "role": "challenger", "list": "Lyon Ensemble" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "EELV",        "candidate": "Grégory Doucet", "pct": 30 },
+          { "party": "LR",          "candidate": "TBD",            "pct": 25 },
+          { "party": "RN",          "candidate": "TBD",            "pct": 20 },
+          { "party": "Renaissance", "candidate": "TBD",            "pct": 15 },
+          { "party": "Other",       "candidate": "Others",         "pct": 10 }
+        ],
+        "round2_projection": [
+          { "party": "EELV", "candidate": "Grégory Doucet", "pct": 54 },
+          { "party": "LR",   "candidate": "TBD",            "pct": 46 }
+        ],
+        "source": "OpinionWay poll",
+        "date": "2026-01-28",
+        "margin_of_error": 4.0
+      }
+    },
+    {
+      "id": "toulouse",
+      "name": "Toulouse",
+      "departement": "31",
+      "type": "major_mayoral",
+      "population": 493000,
+      "coordinates": [1.4442, 43.6047],
+      "incumbent": {
+        "name": "Jean-Luc Moudenc",
+        "party": "LR",
+        "since": 2014
+      },
+      "candidates": [
+        { "name": "Jean-Luc Moudenc", "party": "LR",          "role": "incumbent",  "list": "Toulouse pour Tous" },
+        { "name": "TBD",              "party": "NFP",          "role": "challenger", "list": "Toulouse en Commun" },
+        { "name": "TBD",              "party": "RN",           "role": "challenger", "list": "Toulouse d'Abord" },
+        { "name": "TBD",              "party": "Renaissance",  "role": "challenger", "list": "Toulouse Ensemble" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "LR",          "candidate": "Jean-Luc Moudenc", "pct": 35 },
+          { "party": "NFP",         "candidate": "TBD",              "pct": 25 },
+          { "party": "RN",          "candidate": "TBD",              "pct": 22 },
+          { "party": "Renaissance", "candidate": "TBD",              "pct": 12 },
+          { "party": "Other",       "candidate": "Others",           "pct": 6 }
+        ],
+        "round2_projection": [
+          { "party": "LR",  "candidate": "Jean-Luc Moudenc", "pct": 57 },
+          { "party": "NFP", "candidate": "TBD",              "pct": 43 }
+        ],
+        "source": "IFOP poll",
+        "date": "2026-01-20",
+        "margin_of_error": 4.5
+      }
+    },
+    {
+      "id": "nice",
+      "name": "Nice",
+      "departement": "06",
+      "type": "major_mayoral",
+      "population": 342000,
+      "coordinates": [7.2620, 43.7102],
+      "incumbent": {
+        "name": "Christian Estrosi",
+        "party": "LR",
+        "since": 2008
+      },
+      "candidates": [
+        { "name": "Christian Estrosi", "party": "LR",   "role": "incumbent",  "list": "Nice Côte d'Azur" },
+        { "name": "TBD",               "party": "RN",   "role": "challenger", "list": "Nice d'Abord" },
+        { "name": "TBD",               "party": "NFP",  "role": "challenger", "list": "Nice en Commun" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "LR",   "candidate": "Christian Estrosi", "pct": 42 },
+          { "party": "RN",   "candidate": "TBD",               "pct": 28 },
+          { "party": "NFP",  "candidate": "TBD",               "pct": 18 },
+          { "party": "Other","candidate": "Others",            "pct": 12 }
+        ],
+        "round2_projection": [
+          { "party": "LR",  "candidate": "Christian Estrosi", "pct": 61 },
+          { "party": "RN",  "candidate": "TBD",               "pct": 39 }
+        ],
+        "source": "Local polling aggregate",
+        "date": "2026-02-01",
+        "margin_of_error": 5.0
+      }
+    },
+    {
+      "id": "nantes",
+      "name": "Nantes",
+      "departement": "44",
+      "type": "major_mayoral",
+      "population": 323000,
+      "coordinates": [-1.5536, 47.2184],
+      "incumbent": {
+        "name": "Johanna Rolland",
+        "party": "PS",
+        "since": 2014
+      },
+      "candidates": [
+        { "name": "Johanna Rolland", "party": "PS",          "role": "incumbent",  "list": "Nantes, la Vie devant Nous" },
+        { "name": "TBD",             "party": "LR",           "role": "challenger", "list": "Nantes Ambition" },
+        { "name": "TBD",             "party": "RN",           "role": "challenger", "list": "Nantes pour Tous" },
+        { "name": "TBD",             "party": "EELV",         "role": "challenger", "list": "Nantes Verte" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "PS",   "candidate": "Johanna Rolland", "pct": 33 },
+          { "party": "LR",   "candidate": "TBD",             "pct": 22 },
+          { "party": "RN",   "candidate": "TBD",             "pct": 20 },
+          { "party": "EELV", "candidate": "TBD",             "pct": 15 },
+          { "party": "Other","candidate": "Others",          "pct": 10 }
+        ],
+        "round2_projection": [
+          { "party": "PS",  "candidate": "Johanna Rolland", "pct": 55 },
+          { "party": "LR",  "candidate": "TBD",             "pct": 45 }
+        ],
+        "source": "BVA poll",
+        "date": "2026-01-25",
+        "margin_of_error": 4.5
+      }
+    },
+    {
+      "id": "strasbourg",
+      "name": "Strasbourg",
+      "departement": "67",
+      "type": "major_mayoral",
+      "population": 285000,
+      "coordinates": [7.7521, 48.5734],
+      "incumbent": {
+        "name": "Jeanne Barseghian",
+        "party": "EELV",
+        "since": 2020
+      },
+      "candidates": [
+        { "name": "Jeanne Barseghian", "party": "EELV",        "role": "incumbent",  "list": "Strasbourg Écologie" },
+        { "name": "TBD",               "party": "LR",           "role": "challenger", "list": "Strasbourg Forte" },
+        { "name": "TBD",               "party": "RN",           "role": "challenger", "list": "Strasbourg d'Abord" },
+        { "name": "TBD",               "party": "Renaissance",  "role": "challenger", "list": "Strasbourg Ensemble" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "EELV",        "candidate": "Jeanne Barseghian", "pct": 28 },
+          { "party": "LR",          "candidate": "TBD",               "pct": 24 },
+          { "party": "RN",          "candidate": "TBD",               "pct": 22 },
+          { "party": "Renaissance", "candidate": "TBD",               "pct": 16 },
+          { "party": "Other",       "candidate": "Others",            "pct": 10 }
+        ],
+        "round2_projection": [
+          { "party": "EELV", "candidate": "Jeanne Barseghian", "pct": 51 },
+          { "party": "LR",   "candidate": "TBD",               "pct": 49 }
+        ],
+        "source": "Local polling",
+        "date": "2026-02-03",
+        "margin_of_error": 5.0,
+        "note": "Extremely tight race — within margin of error."
+      }
+    },
+    {
+      "id": "bordeaux",
+      "name": "Bordeaux",
+      "departement": "33",
+      "type": "major_mayoral",
+      "population": 260000,
+      "coordinates": [-0.5792, 44.8378],
+      "incumbent": {
+        "name": "Pierre Hurmic",
+        "party": "EELV",
+        "since": 2020
+      },
+      "candidates": [
+        { "name": "Pierre Hurmic",  "party": "EELV",        "role": "incumbent",  "list": "Bordeaux Respirons" },
+        { "name": "TBD",            "party": "LR",           "role": "challenger", "list": "Bordeaux Centre Droit" },
+        { "name": "TBD",            "party": "RN",           "role": "challenger", "list": "Bordeaux d'Abord" },
+        { "name": "TBD",            "party": "Renaissance",  "role": "challenger", "list": "Bordeaux Ensemble" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "EELV",        "candidate": "Pierre Hurmic", "pct": 26 },
+          { "party": "LR",          "candidate": "TBD",           "pct": 24 },
+          { "party": "RN",          "candidate": "TBD",           "pct": 23 },
+          { "party": "Renaissance", "candidate": "TBD",           "pct": 15 },
+          { "party": "Other",       "candidate": "Others",        "pct": 12 }
+        ],
+        "round2_projection": [
+          { "party": "LR",   "candidate": "TBD",           "pct": 52 },
+          { "party": "EELV", "candidate": "Pierre Hurmic", "pct": 48 }
+        ],
+        "source": "Odoxa poll",
+        "date": "2026-01-30",
+        "margin_of_error": 5.0,
+        "note": "Very competitive three-way contest."
+      }
+    },
+    {
+      "id": "montpellier",
+      "name": "Montpellier",
+      "departement": "34",
+      "type": "major_mayoral",
+      "population": 300000,
+      "coordinates": [3.8767, 43.6108],
+      "incumbent": {
+        "name": "Michaël Delafosse",
+        "party": "PS",
+        "since": 2020
+      },
+      "candidates": [
+        { "name": "Michaël Delafosse", "party": "PS",   "role": "incumbent",  "list": "Montpellier Méditerranée" },
+        { "name": "TBD",               "party": "RN",   "role": "challenger", "list": "Montpellier d'Abord" },
+        { "name": "TBD",               "party": "LR",   "role": "challenger", "list": "Montpellier Centre" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "PS",   "candidate": "Michaël Delafosse", "pct": 34 },
+          { "party": "RN",   "candidate": "TBD",               "pct": 28 },
+          { "party": "LR",   "candidate": "TBD",               "pct": 20 },
+          { "party": "Other","candidate": "Others",            "pct": 18 }
+        ],
+        "round2_projection": [
+          { "party": "PS",  "candidate": "Michaël Delafosse", "pct": 56 },
+          { "party": "RN",  "candidate": "TBD",               "pct": 44 }
+        ],
+        "source": "Local polling",
+        "date": "2026-02-05",
+        "margin_of_error": 5.0
+      }
+    },
+    {
+      "id": "lille",
+      "name": "Lille",
+      "departement": "59",
+      "type": "major_mayoral",
+      "population": 237000,
+      "coordinates": [3.0573, 50.6292],
+      "incumbent": {
+        "name": "Martine Aubry",
+        "party": "PS",
+        "since": 2001,
+        "note": "Aubry has not confirmed she will seek a fifth term."
+      },
+      "candidates": [
+        { "name": "Martine Aubry (if running)", "party": "PS",   "role": "incumbent",  "list": "Lille Ensemble" },
+        { "name": "TBD",                         "party": "RN",   "role": "challenger", "list": "Lille d'Abord" },
+        { "name": "TBD",                         "party": "LR",   "role": "challenger", "list": "Lille Centre" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "PS",   "candidate": "PS List",  "pct": 36 },
+          { "party": "RN",   "candidate": "TBD",      "pct": 26 },
+          { "party": "LR",   "candidate": "TBD",      "pct": 18 },
+          { "party": "Other","candidate": "Others",   "pct": 20 }
+        ],
+        "round2_projection": [
+          { "party": "PS",  "candidate": "PS List",  "pct": 58 },
+          { "party": "RN",  "candidate": "TBD",      "pct": 42 }
+        ],
+        "source": "BVA poll",
+        "date": "2026-01-18",
+        "margin_of_error": 5.0
+      }
+    },
+    {
+      "id": "rennes",
+      "name": "Rennes",
+      "departement": "35",
+      "type": "major_mayoral",
+      "population": 223000,
+      "coordinates": [-1.6778, 48.1173],
+      "incumbent": {
+        "name": "Nathalie Appéré",
+        "party": "PS",
+        "since": 2014
+      },
+      "candidates": [
+        { "name": "Nathalie Appéré", "party": "PS",    "role": "incumbent",  "list": "Rennes, la Ville que Nous Aimons" },
+        { "name": "TBD",             "party": "LR",    "role": "challenger", "list": "Rennes Ambition" },
+        { "name": "TBD",             "party": "RN",    "role": "challenger", "list": "Rennes d'Abord" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "PS",   "candidate": "Nathalie Appéré", "pct": 38 },
+          { "party": "LR",   "candidate": "TBD",             "pct": 24 },
+          { "party": "RN",   "candidate": "TBD",             "pct": 18 },
+          { "party": "Other","candidate": "Others",          "pct": 20 }
+        ],
+        "round2_projection": [
+          { "party": "PS",  "candidate": "Nathalie Appéré", "pct": 60 },
+          { "party": "LR",  "candidate": "TBD",             "pct": 40 }
+        ],
+        "source": "Local polling",
+        "date": "2026-01-22",
+        "margin_of_error": 5.5
+      }
+    },
+    {
+      "id": "grenoble",
+      "name": "Grenoble",
+      "departement": "38",
+      "type": "major_mayoral",
+      "population": 160000,
+      "coordinates": [5.7245, 45.1885],
+      "incumbent": {
+        "name": "Éric Piolle",
+        "party": "EELV",
+        "since": 2014
+      },
+      "candidates": [
+        { "name": "Éric Piolle",  "party": "EELV",  "role": "incumbent",  "list": "Grenoble en Commun" },
+        { "name": "TBD",          "party": "LR",    "role": "challenger", "list": "Grenoble Centre Droit" },
+        { "name": "TBD",          "party": "RN",    "role": "challenger", "list": "Grenoble d'Abord" }
+      ],
+      "polls": {
+        "round1": [
+          { "party": "EELV", "candidate": "Éric Piolle", "pct": 34 },
+          { "party": "LR",   "candidate": "TBD",         "pct": 26 },
+          { "party": "RN",   "candidate": "TBD",         "pct": 20 },
+          { "party": "Other","candidate": "Others",      "pct": 20 }
+        ],
+        "round2_projection": [
+          { "party": "EELV", "candidate": "Éric Piolle", "pct": 55 },
+          { "party": "LR",   "candidate": "TBD",         "pct": 45 }
+        ],
+        "source": "Local polling",
+        "date": "2026-01-20",
+        "margin_of_error": 5.5
+      }
+    }
+  ],
+  "departement_map": {
+    "note": "Departement-level shading uses the party of the largest commune's incumbent mayor as a proxy. This will be updated with actual results.",
+    "mapping": {
+      "75": "PS", "13": "PS", "69": "EELV", "31": "LR", "06": "LR",
+      "44": "PS", "67": "EELV", "33": "EELV", "34": "PS", "59": "PS",
+      "35": "PS", "38": "EELV", "76": "PS", "57": "DVG", "06": "LR",
+      "29": "PS", "22": "PS", "56": "PS", "85": "DVD", "49": "PS",
+      "37": "DVD", "41": "DVD", "45": "DVD", "28": "DVD", "91": "PS",
+      "92": "Renaissance", "93": "NFP", "94": "NFP", "95": "RN",
+      "77": "DVD", "78": "LR", "60": "DVD", "02": "RN", "08": "RN",
+      "51": "DVD", "52": "DVD", "10": "DVD", "89": "DVD", "21": "DVD",
+      "71": "DVD", "01": "DVD", "74": "DVD", "73": "DVD", "63": "DVD",
+      "43": "DVD", "42": "LR", "07": "DVD", "26": "DVD", "84": "RN",
+      "30": "RN", "11": "RN", "66": "RN", "09": "DVD", "12": "DVD",
+      "15": "DVD", "19": "PS", "23": "DVD", "87": "PS", "16": "DVD",
+      "17": "DVD", "79": "DVD", "86": "DVD", "36": "DVD", "03": "DVD",
+      "58": "DVD", "18": "DVD", "53": "DVD", "72": "DVD", "61": "DVD",
+      "14": "DVD", "50": "DVD", "27": "DVD", "76": "PS", "80": "RN",
+      "62": "RN", "59": "PS", "55": "DVD", "54": "DVD", "88": "DVD",
+      "70": "DVD", "25": "DVD", "39": "DVD", "90": "DVD", "68": "DVD",
+      "972": "PS", "971": "DVG", "973": "DVG", "974": "DVG", "976": "DVG"
+    }
+  }
+}
