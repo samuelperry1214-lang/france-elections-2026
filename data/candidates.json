@@ -1,21 +1,24 @@
 {
   "election": {
     "name": "French Municipal Elections 2026",
-    "round1_date": "2026-03-22",
-    "round2_date": "2026-03-29",
-    "description": "Municipal elections across all French communes. Voters elect municipal councils, which then elect the mayor. Cities over 1,000 inhabitants use proportional list voting over two rounds."
+    "round1_date": "2026-03-15",
+    "round2_date": "2026-03-22",
+    "description": "Municipal elections across all French communes. Voters elect municipal councils, which then elect the mayor. Cities over 1,000 inhabitants use proportional list voting over two rounds. A new law for 2026 abolishes arrondissement-level councils in Paris, Lyon and Marseille, replacing them with a single city-wide list."
   },
   "parties": {
-    "PS":         { "name": "Parti Socialiste",           "short": "PS",          "color": "#E8566C", "text_color": "#fff" },
-    "NFP":        { "name": "Nouveau Front Populaire",     "short": "NFP",         "color": "#C0392B", "text_color": "#fff" },
-    "EELV":       { "name": "Europe Écologie Les Verts",   "short": "EELV",        "color": "#27AE60", "text_color": "#fff" },
-    "LR":         { "name": "Les Républicains",            "short": "LR",          "color": "#2980B9", "text_color": "#fff" },
-    "Renaissance":{ "name": "Renaissance / Ensemble",      "short": "Ens.",        "color": "#F39C12", "text_color": "#fff" },
-    "RN":         { "name": "Rassemblement National",      "short": "RN",          "color": "#2C3E7A", "text_color": "#fff" },
-    "PCF":        { "name": "Parti Communiste Français",   "short": "PCF",         "color": "#E74C3C", "text_color": "#fff" },
-    "DVG":        { "name": "Divers Gauche",               "short": "DVG",         "color": "#F1948A", "text_color": "#fff" },
-    "DVD":        { "name": "Divers Droite",               "short": "DVD",         "color": "#85C1E9", "text_color": "#fff" },
-    "Other":      { "name": "Other / Independent",         "short": "Other",       "color": "#95A5A6", "text_color": "#fff" }
+    "PS":          { "name": "Parti Socialiste",            "short": "PS",     "color": "#E8566C", "text_color": "#fff", "ideology": "Social democracy", "position": "Centre-left", "founded": 1969, "description": "The traditional party of the French left, in power under Mitterrand (1981–95) and Hollande (2012–17). Now the backbone of the NFP left coalition. Champions public services, workers' rights and European integration. Has lost ground to both the radical left (LFI) and Macron's centrists since 2017." },
+    "NFP":         { "name": "Nouveau Front Populaire",     "short": "NFP",    "color": "#C0392B", "text_color": "#fff", "ideology": "Left coalition", "position": "Left", "founded": 2024, "description": "A left-wing electoral coalition formed for the 2024 legislative elections, named after the 1930s Popular Front. Includes PS, EELV, PCF, Place Publique and LFI. Won the most seats in 2024 but couldn't form a majority government. The coalition's internal tensions — particularly between PS and LFI — remain a defining feature of French left politics." },
+    "EELV":        { "name": "Europe Écologie Les Verts",   "short": "EELV",   "color": "#27AE60", "text_color": "#fff", "ideology": "Green politics", "position": "Centre-left to left", "founded": 2010, "description": "France's Green party, which rode a 'green wave' in the 2020 municipal elections to capture Lyon, Bordeaux, Strasbourg and Grenoble. Focuses on urban ecology, cycling infrastructure, environmental policy and social justice. Governs in coalition with PS and PCF in most cities it controls." },
+    "LR":          { "name": "Les Républicains",            "short": "LR",     "color": "#2980B9", "text_color": "#fff", "ideology": "Conservatism / Gaullism", "position": "Centre-right", "founded": 2015, "description": "The successor to the UMP and RPR, France's traditional Gaullist conservative party. Once the dominant force of the French right, LR has been hollowed out since Macron's 2017 breakthrough — losing members to both Renaissance and the hard right. Champions lower taxes, law and order, stricter immigration and European reform." },
+    "Renaissance": { "name": "Renaissance / Ensemble",      "short": "Ens.",   "color": "#F39C12", "text_color": "#fff", "ideology": "Liberal centrism", "position": "Centre", "founded": 2016, "description": "Emmanuel Macron's party, founded as 'En Marche' in 2016. Explicitly anti-left/right, it combines economic liberalism (labour market reform, pro-business) with social progressivism. Has struggled to build local roots and in 2026 largely chose to back better-implanted candidates from other parties rather than run its own." },
+    "RN":          { "name": "Rassemblement National",      "short": "RN",     "color": "#2C3E7A", "text_color": "#fff", "ideology": "National populism", "position": "Far right", "founded": 1972, "description": "Founded as the Front National by Jean-Marie Le Pen in 1972, renamed in 2018 under Marine Le Pen's leadership. France's largest party by first-round votes in recent elections. Anti-immigration, Eurosceptic, economically protectionist with a welfare-state tinge. Its 2026 municipal push — if successful in Marseille — would give it its largest city in France." },
+    "LFI":         { "name": "La France Insoumise",         "short": "LFI",    "color": "#CB4335", "text_color": "#fff", "ideology": "Radical left / Populism", "position": "Hard left", "founded": 2016, "description": "Founded by Jean-Luc Mélenchon in 2016, LFI is France's most successful hard-left force in decades. Supports a 6th Republic, increased minimum wage, wealth taxes and a break from NATO. Often runs separately from PS and EELV, which tensions the NFP coalition. Strong in urban areas with large working-class and young populations." },
+    "PCF":         { "name": "Parti Communiste Français",   "short": "PCF",    "color": "#E74C3C", "text_color": "#fff", "ideology": "Communism / Left", "position": "Hard left", "founded": 1920, "description": "One of the oldest parties in France, the PCF was a major political force from the Liberation to the 1980s. Now much reduced, it remains influential in municipal politics through its network of elected officials and typically allies with PS and EELV." },
+    "UDR":         { "name": "Union des Droites pour la République", "short": "UDR", "color": "#1A237E", "text_color": "#fff", "ideology": "Hard right / National conservatism", "position": "Hard right", "founded": 2024, "description": "Formed in 2024 by LR president Éric Ciotti after he controversially allied LR with RN, triggering a party split. UDR sits between traditional conservatism and RN-style national populism. Allied with RN in 2024 legislative elections." },
+    "Reconquête":  { "name": "Reconquête",                  "short": "Recon.", "color": "#4A235A", "text_color": "#fff", "ideology": "Far right / Nativist", "position": "Far right", "founded": 2021, "description": "Founded by polemicist Éric Zemmour in 2021. Even further right than RN on immigration and Islam, Reconquête is culturally ultra-conservative and explicitly anti-Islam. Struggled to build an electoral base beyond its media profile." },
+    "Horizons":    { "name": "Horizons",                    "short": "Horiz.", "color": "#E67E22", "text_color": "#fff", "ideology": "Liberal centrism / Centre-right", "position": "Centre to centre-right", "founded": 2021, "description": "Founded by former Prime Minister Édouard Philippe in 2021, Horizons is part of the Macron coalition but with a more centre-right flavour. Philippe is seen as a likely presidential candidate in 2027. Strong local roots in Le Havre and other cities." },
+    "DVG":         { "name": "Divers Gauche",               "short": "DVG",    "color": "#F1948A", "text_color": "#fff", "ideology": "Centre-left independent", "position": "Centre-left", "founded": null, "description": "A catch-all category for centre-left politicians not formally affiliated with a major party, often local figures with pragmatic records." },
+    "DVD":         { "name": "Divers Droite",               "short": "DVD",    "color": "#85C1E9", "text_color": "#fff", "ideology": "Centre-right independent", "position": "Centre-right", "founded": null, "description": "Centre-right independents. Many French mayors — especially in smaller communes — stand under this label, prioritising local governance over national party identity." }
   },
   "major_races": [
     {
@@ -25,36 +28,37 @@
       "type": "major_mayoral",
       "population": 2161000,
       "coordinates": [2.3522, 48.8566],
-      "note": "Paris uses a two-tier system: 20 arrondissements each elect a council, feeding into the Paris Council which elects the mayor.",
-      "incumbent": {
-        "name": "Anne Hidalgo",
-        "party": "PS",
-        "since": 2014
-      },
+      "context": "Paris has been governed by the left since 2001. Anne Hidalgo, who served two terms (2014–2026), announced in November 2024 she would not seek a third term — designating Emmanuel Grégoire, her long-serving first deputy, as the left's candidate. The 2026 election introduces a major institutional change: arrondissement-level councils are abolished, with the entire city voting on a single list, making the race more decisive than any in living memory. The leading battle is between Grégoire and Rachida Dati, Sarkozy's former justice minister who has been mayor of the 7th arrondissement since 2008. Macron's camp backs Bournazel but Renaissance has no candidate of its own.",
+      "macron_endorsement": { "candidate": "Pierre-Yves Bournazel", "party": "Horizons", "note": "Renaissance officially backs Bournazel (Horizons). Former ministers Clément Beaune and Marlène Schiappa are on his list. Macron himself has not publicly intervened." },
+      "incumbent": { "name": "Anne Hidalgo", "party": "PS", "since": 2014, "note": "Not running for re-election." },
       "candidates": [
-        { "name": "Anne Hidalgo",    "party": "PS",          "role": "incumbent",   "list": "Paris en Commun" },
-        { "name": "Rachida Dati",    "party": "LR",          "role": "challenger",  "list": "Paris pour Tous" },
-        { "name": "TBD",             "party": "RN",          "role": "challenger",  "list": "Au Service des Parisiens" },
-        { "name": "TBD",             "party": "Renaissance", "role": "challenger",  "list": "Paris Ensemble" },
-        { "name": "David Belliard",  "party": "EELV",        "role": "challenger",  "list": "Paris Écolo" }
+        { "name": "Emmanuel Grégoire",   "party": "PS",         "role": "left coalition candidate", "list": "Paris est à vous !", "note": "Former first deputy to Hidalgo. Coalition includes PS, EELV, PCF, Place Publique — but NOT LFI." },
+        { "name": "Rachida Dati",        "party": "LR",         "role": "centre-right",             "list": "Changer Paris avec Rachida Dati", "note": "Mayor of the 7th arrondissement. Faces corruption trial in September 2026. Some informal Renaissance support at individual level." },
+        { "name": "Pierre-Yves Bournazel","party": "Horizons",  "role": "macron centrist",          "list": "Paris, ville du monde", "note": "Macron's official pick. Ex-ministers on his list." },
+        { "name": "Sophia Chikirou",     "party": "LFI",        "role": "hard left",                "list": "Le Nouveau Paris Populaire", "note": "MP and Mélenchon ally. Running separately from the PS-led left." },
+        { "name": "Thierry Mariani",     "party": "RN",         "role": "far right",                "list": "Retrouvons Paris", "note": "MEP. RN candidate for Paris." },
+        { "name": "Sarah Knafo",         "party": "Reconquête", "role": "far right",                "list": "Pour une Autre Paris", "note": "Polling at ~11.5%. Runoff stance will be decisive for alliances." }
       ],
       "polls": {
         "round1": [
-          { "party": "PS",           "candidate": "Anne Hidalgo",   "pct": 27 },
-          { "party": "LR",           "candidate": "Rachida Dati",   "pct": 21 },
-          { "party": "RN",           "candidate": "TBD",            "pct": 16 },
-          { "party": "Renaissance",  "candidate": "TBD",            "pct": 14 },
-          { "party": "EELV",         "candidate": "David Belliard", "pct": 12 },
-          { "party": "Other",        "candidate": "Others",         "pct": 10 }
+          { "party": "PS",         "candidate": "Emmanuel Grégoire",    "pct": 33 },
+          { "party": "LR",         "candidate": "Rachida Dati",         "pct": 27 },
+          { "party": "Horizons",   "candidate": "Pierre-Yves Bournazel","pct": 11.5 },
+          { "party": "Reconquête", "candidate": "Sarah Knafo",          "pct": 11.5 },
+          { "party": "LFI",        "candidate": "Sophia Chikirou",      "pct": 10 },
+          { "party": "RN",         "candidate": "Thierry Mariani",      "pct": 7 }
         ],
         "round2_projection": [
-          { "party": "PS",  "candidate": "Anne Hidalgo", "pct": 52 },
-          { "party": "LR",  "candidate": "Rachida Dati", "pct": 48 }
+          { "party": "PS",  "candidate": "Emmanuel Grégoire", "pct": 54 },
+          { "party": "LR",  "candidate": "Rachida Dati",      "pct": 46 }
         ],
-        "source": "IFOP / BVA polling aggregate",
-        "date": "2026-02-10",
-        "margin_of_error": 3.5
-      }
+        "source": "Ipsos BVA-CESI",
+        "date": "2026-03-01",
+        "margin_of_error": 3.0,
+        "note": "Five candidates at or near 10% threshold. Runoff alliances — particularly where Knafo and Bournazel voters go — will be decisive."
+      },
+      "local_papers": ["Le Parisien", "Paris Match", "Affiches Parisiennes"],
+      "analysis_keywords": ["Paris municipales", "Grégoire Paris", "Dati Paris", "mairie Paris 2026"]
     },
     {
       "id": "marseille",
@@ -63,35 +67,34 @@
       "type": "major_mayoral",
       "population": 870000,
       "coordinates": [5.3698, 43.2965],
-      "note": "Marseille has 16 arrondissements grouped into 8 sectors, each electing a council. Historically a PS stronghold, now a key RN battleground.",
-      "incumbent": {
-        "name": "Benoît Payan",
-        "party": "PS",
-        "since": 2021
-      },
+      "context": "France's second city has a turbulent political history. The right controlled city hall for 25 years under Jean-Claude Gaudin (1995–2020) before a fragile left-green coalition won in 2020 under Michèle Rubirola, who later handed power to Benoît Payan. Marseille has some of France's highest poverty rates, a chronic housing crisis and persistent drug-related violence — issues that have handed the RN a powerful platform. Franck Allisio, RN MP personally backed by Marine Le Pen, is neck and neck with Payan in polls. The burning question: will Marseille become the largest RN-governed city in France? A Payan–Allisio runoff would be the election's highest-stakes contest.",
+      "macron_endorsement": { "candidate": "Martine Vassal", "party": "LR", "note": "Renaissance officially backs Vassal (LR), who secured a joint LR-Renaissance list. Vassal is a pragmatic local figure — not ideologically Macronist, but the centrist camp has no viable alternative." },
+      "incumbent": { "name": "Benoît Payan", "party": "PS", "since": 2021 },
       "candidates": [
-        { "name": "Benoît Payan",       "party": "PS",    "role": "incumbent",  "list": "Marseille en Grand" },
-        { "name": "Stéphane Ravier",    "party": "RN",    "role": "challenger", "list": "Marseille pour Tous" },
-        { "name": "Martine Vassal",     "party": "LR",    "role": "challenger", "list": "Marseille Forte et Unie" },
-        { "name": "TBD",               "party": "Renaissance", "role": "challenger", "list": "Ensemble pour Marseille" }
+        { "name": "Benoît Payan",     "party": "PS",  "role": "incumbent",  "list": "Pour Marseille", "note": "Left coalition: PS, PCF, Écologistes, Génération.s, Place Publique, Parti Animaliste." },
+        { "name": "Franck Allisio",   "party": "RN",  "role": "far right",  "list": "Marseille en ordre", "note": "RN MP for the 12th constituency. Marine Le Pen's personal pick. Polling within 3 points of Payan." },
+        { "name": "Martine Vassal",   "party": "LR",  "role": "centre-right","list": "Marseille, je t'aime", "note": "President of the Aix-Marseille Métropole and Bouches-du-Rhône department. Joint LR-Renaissance list. Lost 2020 narrowly." },
+        { "name": "Sébastien Delogu", "party": "LFI", "role": "hard left",  "list": "Marseille insoumise", "note": "LFI deputy for the northern constituencies. Refused alliance with Payan. Backed by Mélenchon who visited March 7." }
       ],
       "polls": {
         "round1": [
-          { "party": "RN",          "candidate": "Stéphane Ravier",  "pct": 32 },
-          { "party": "PS",          "candidate": "Benoît Payan",     "pct": 26 },
-          { "party": "LR",          "candidate": "Martine Vassal",   "pct": 22 },
-          { "party": "Renaissance", "candidate": "TBD",              "pct": 10 },
-          { "party": "Other",       "candidate": "Others",           "pct": 10 }
+          { "party": "PS",  "candidate": "Benoît Payan",     "pct": 35 },
+          { "party": "RN",  "candidate": "Franck Allisio",   "pct": 32 },
+          { "party": "LR",  "candidate": "Martine Vassal",   "pct": 18 },
+          { "party": "LFI", "candidate": "Sébastien Delogu", "pct": 13 },
+          { "party": "Other","candidate": "Others",          "pct": 2  }
         ],
         "round2_projection": [
-          { "party": "PS",  "candidate": "Benoît Payan",    "pct": 48 },
-          { "party": "RN",  "candidate": "Stéphane Ravier", "pct": 52 }
+          { "party": "PS",  "candidate": "Benoît Payan",   "pct": 56 },
+          { "party": "RN",  "candidate": "Franck Allisio", "pct": 44 }
         ],
-        "source": "Harris Interactive / Odoxa aggregate",
-        "date": "2026-02-14",
-        "margin_of_error": 4.0,
-        "note": "Tight three-way race. Runoff outcome highly uncertain."
-      }
+        "source": "Ifop / La Provence",
+        "date": "2026-03-01",
+        "margin_of_error": 3.5,
+        "note": "If Vassal backs Allisio in round 2 (as he has called for), the runoff becomes a toss-up. Payan has categorically refused alliance with LFI's Delogu."
+      },
+      "local_papers": ["La Provence", "Marsactu", "Made in Marseille"],
+      "analysis_keywords": ["Marseille municipales", "Payan Allisio", "RN Marseille 2026"]
     },
     {
       "id": "lyon",
@@ -100,33 +103,36 @@
       "type": "major_mayoral",
       "population": 522000,
       "coordinates": [4.8357, 45.7640],
-      "incumbent": {
-        "name": "Grégory Doucet",
-        "party": "EELV",
-        "since": 2020
-      },
+      "context": "The 2026 Lyon race is one of the election's biggest potential upsets. Grégory Doucet won in 2020 as part of the 'green wave' that also swept Bordeaux and Strasbourg. His term has been marked by ambitious cycling policy, restrictions on cars in the city centre and a ban on certain events in public parks — popular with some residents, deeply controversial with others. His challenger is Jean-Michel Aulas, the legendary president of Olympique Lyonnais for 35 years (1987–2022), who has no prior political experience but commands near-mythical status among Lyon residents. Aulas has secured endorsements from LR, Horizons, MoDem and Renaissance in an unusually broad right-centre coalition. Current polling shows him winning a hypothetical runoff 57–43 against Doucet.",
+      "macron_endorsement": { "candidate": "Jean-Michel Aulas", "party": "DVD", "note": "Renaissance and Horizons both back Aulas. He is the centrist camp's clearest potential success story in 2026." },
+      "incumbent": { "name": "Grégory Doucet", "party": "EELV", "since": 2020 },
       "candidates": [
-        { "name": "Grégory Doucet",  "party": "EELV",        "role": "incumbent",  "list": "Lyon en Commun" },
-        { "name": "TBD",             "party": "LR",           "role": "challenger", "list": "Lyon Avenir" },
-        { "name": "TBD",             "party": "RN",           "role": "challenger", "list": "Rassemblement pour Lyon" },
-        { "name": "TBD",             "party": "Renaissance",  "role": "challenger", "list": "Lyon Ensemble" }
+        { "name": "Grégory Doucet",         "party": "EELV", "role": "incumbent",    "list": "Lyon en Commun", "note": "Coalition of Greens, PS, PCF." },
+        { "name": "Jean-Michel Aulas",       "party": "DVD",  "role": "centre-right", "list": "Lyon, osons l'avenir", "note": "Former OL president. LR, Horizons, Renaissance, MoDem coalition. No prior political experience." },
+        { "name": "Anaïs Belouassa-Cherifi", "party": "LFI",  "role": "hard left",    "list": "Faire mieux pour Lyon", "note": "MP for Lyon 1st constituency, elected 2024." },
+        { "name": "Alexandre Dupalais",      "party": "RN",   "role": "far right",    "list": "Rassemblement pour Lyon", "note": "Joint RN–UDR list." },
+        { "name": "Georges Képénékian",      "party": "DVG",  "role": "centre-left",  "list": "Lyon Citoyen", "note": "Former acting mayor (2017-2020) and Gérard Collomb's former first deputy. Running as independent centre-left." }
       ],
       "polls": {
         "round1": [
-          { "party": "EELV",        "candidate": "Grégory Doucet", "pct": 30 },
-          { "party": "LR",          "candidate": "TBD",            "pct": 25 },
-          { "party": "RN",          "candidate": "TBD",            "pct": 20 },
-          { "party": "Renaissance", "candidate": "TBD",            "pct": 15 },
-          { "party": "Other",       "candidate": "Others",         "pct": 10 }
+          { "party": "EELV", "candidate": "Grégory Doucet",         "pct": 29 },
+          { "party": "DVD",  "candidate": "Jean-Michel Aulas",       "pct": 27 },
+          { "party": "LFI",  "candidate": "Anaïs Belouassa-Cherifi", "pct": 18 },
+          { "party": "RN",   "candidate": "Alexandre Dupalais",      "pct": 16 },
+          { "party": "DVG",  "candidate": "Georges Képénékian",      "pct": 7  },
+          { "party": "Other","candidate": "Others",                  "pct": 3  }
         ],
         "round2_projection": [
-          { "party": "EELV", "candidate": "Grégory Doucet", "pct": 54 },
-          { "party": "LR",   "candidate": "TBD",            "pct": 46 }
+          { "party": "DVD",  "candidate": "Jean-Michel Aulas",  "pct": 57 },
+          { "party": "EELV", "candidate": "Grégory Doucet",     "pct": 43 }
         ],
-        "source": "OpinionWay poll",
-        "date": "2026-01-28",
-        "margin_of_error": 4.0
-      }
+        "source": "Elabe",
+        "date": "2026-02-20",
+        "margin_of_error": 3.5,
+        "note": "A major potential upset. Aulas is favoured in a runoff. LFI's strong showing complicates left-wing fusion strategy."
+      },
+      "local_papers": ["Le Progrès", "Médiacités Lyon", "Lyon Capitale"],
+      "analysis_keywords": ["Lyon municipales", "Aulas Doucet Lyon 2026", "mairie Lyon"]
     },
     {
       "id": "toulouse",
@@ -135,33 +141,33 @@
       "type": "major_mayoral",
       "population": 493000,
       "coordinates": [1.4442, 43.6047],
-      "incumbent": {
-        "name": "Jean-Luc Moudenc",
-        "party": "LR",
-        "since": 2014
-      },
+      "context": "The 'Pink City' (named for its rose brick architecture, not its politics) has been governed by the right under Jean-Luc Moudenc since 2014, after a brief Socialist interlude. With Airbus, a booming aerospace and tech sector and France's fastest-growing population among major cities, Toulouse's prosperity has been a calling card for Moudenc. The left is unusually united behind François Briançon (PS-led Gauche Unie), polling at 30% and within striking distance. However, LFI's François Piquemal — a sitting MP — is running separately at 23%, threatening to split the left vote and help Moudenc through.",
+      "macron_endorsement": { "candidate": "Jean-Luc Moudenc", "party": "DVD", "note": "Renaissance backs incumbent Moudenc, who is seen as a reliable pro-business, centre-right manager. No separate Renaissance list." },
+      "incumbent": { "name": "Jean-Luc Moudenc", "party": "DVD", "since": 2014 },
       "candidates": [
-        { "name": "Jean-Luc Moudenc", "party": "LR",          "role": "incumbent",  "list": "Toulouse pour Tous" },
-        { "name": "TBD",              "party": "NFP",          "role": "challenger", "list": "Toulouse en Commun" },
-        { "name": "TBD",              "party": "RN",           "role": "challenger", "list": "Toulouse d'Abord" },
-        { "name": "TBD",              "party": "Renaissance",  "role": "challenger", "list": "Toulouse Ensemble" }
+        { "name": "Jean-Luc Moudenc",   "party": "DVD",  "role": "incumbent",    "list": "Toulouse pour tous", "note": "Seeks 3rd term. Pro-business, pro-Airbus platform. Renaissance backing." },
+        { "name": "François Briançon",  "party": "PS",   "role": "left coalition","list": "Toulouse en commun", "note": "PS, EELV, PCF, Génération.s, Place Publique coalition — but NOT LFI." },
+        { "name": "François Piquemal",  "party": "LFI",  "role": "hard left",    "list": "Toulouse insoumise", "note": "MP for Toulouse 4th. Refuses to join Briançon's list. 23% makes him a potential kingmaker." },
+        { "name": "Julien Leonardelli", "party": "RN",   "role": "far right",    "list": "Rassemblement pour Toulouse", "note": "MEP. First serious RN push in Toulouse." }
       ],
       "polls": {
         "round1": [
-          { "party": "LR",          "candidate": "Jean-Luc Moudenc", "pct": 35 },
-          { "party": "NFP",         "candidate": "TBD",              "pct": 25 },
-          { "party": "RN",          "candidate": "TBD",              "pct": 22 },
-          { "party": "Renaissance", "candidate": "TBD",              "pct": 12 },
-          { "party": "Other",       "candidate": "Others",           "pct": 6 }
+          { "party": "DVD",  "candidate": "Jean-Luc Moudenc",   "pct": 33 },
+          { "party": "PS",   "candidate": "François Briançon",  "pct": 30 },
+          { "party": "LFI",  "candidate": "François Piquemal",  "pct": 23 },
+          { "party": "RN",   "candidate": "Julien Leonardelli", "pct": 14 }
         ],
         "round2_projection": [
-          { "party": "LR",  "candidate": "Jean-Luc Moudenc", "pct": 57 },
-          { "party": "NFP", "candidate": "TBD",              "pct": 43 }
+          { "party": "DVD", "candidate": "Jean-Luc Moudenc",  "pct": 53 },
+          { "party": "PS",  "candidate": "François Briançon", "pct": 47 }
         ],
-        "source": "IFOP poll",
-        "date": "2026-01-20",
-        "margin_of_error": 4.5
-      }
+        "source": "IFOP",
+        "date": "2026-02-15",
+        "margin_of_error": 4.0,
+        "note": "Moudenc leads but if Briançon and Piquemal fuse for round 2 the race becomes a genuine toss-up."
+      },
+      "local_papers": ["La Dépêche du Midi", "Actu Toulouse", "Médiacités Toulouse"],
+      "analysis_keywords": ["Toulouse municipales", "Moudenc Briançon 2026", "mairie Toulouse"]
     },
     {
       "id": "nice",
@@ -170,31 +176,32 @@
       "type": "major_mayoral",
       "population": 342000,
       "coordinates": [7.2620, 43.7102],
-      "incumbent": {
-        "name": "Christian Estrosi",
-        "party": "LR",
-        "since": 2008
-      },
+      "context": "Nice is the election's most dramatic personal contest. Christian Estrosi has governed the city since 2008 and is a central figure in Macron's coalition (he joined Horizons). His challenger is Éric Ciotti — until recently his LR colleague, ally and fellow Alpes-Maritimes representative — who in 2024 controversially allied LR with RN, was expelled from LR, and founded UDR. Two former friends are now opponents in the city they've both dominated for decades. RN has historically polled well in the Alpes-Maritimes, and with UDR as Ciotti's vehicle, this is effectively a RN-adjacent challenge. Ciotti is currently polling ahead.",
+      "macron_endorsement": { "candidate": "Christian Estrosi", "party": "Horizons", "note": "Estrosi is himself an Horizons figure and part of the Macron coalition. Renaissance fully backs him." },
+      "incumbent": { "name": "Christian Estrosi", "party": "Horizons", "since": 2008 },
       "candidates": [
-        { "name": "Christian Estrosi", "party": "LR",   "role": "incumbent",  "list": "Nice Côte d'Azur" },
-        { "name": "TBD",               "party": "RN",   "role": "challenger", "list": "Nice d'Abord" },
-        { "name": "TBD",               "party": "NFP",  "role": "challenger", "list": "Nice en Commun" }
+        { "name": "Christian Estrosi", "party": "Horizons", "role": "incumbent",    "list": "Nice, la ville que nous aimons", "note": "Mayor since 2008. Horizons, the Macron coalition. Previously LR." },
+        { "name": "Éric Ciotti",       "party": "UDR",      "role": "hard right",   "list": "Nice pour tous", "note": "Former LR president who allied with RN in 2024, triggering a party split. His UDR-RN coalition is polling ahead of Estrosi." },
+        { "name": "TBD",               "party": "PS",       "role": "left",         "list": "Nice à Gauche", "note": "Left coalition candidate." }
       ],
       "polls": {
         "round1": [
-          { "party": "LR",   "candidate": "Christian Estrosi", "pct": 42 },
-          { "party": "RN",   "candidate": "TBD",               "pct": 28 },
-          { "party": "NFP",  "candidate": "TBD",               "pct": 18 },
-          { "party": "Other","candidate": "Others",            "pct": 12 }
+          { "party": "UDR",     "candidate": "Éric Ciotti",       "pct": 38 },
+          { "party": "Horizons","candidate": "Christian Estrosi", "pct": 32 },
+          { "party": "PS",      "candidate": "TBD",               "pct": 18 },
+          { "party": "Other",   "candidate": "Others",            "pct": 12 }
         ],
         "round2_projection": [
-          { "party": "LR",  "candidate": "Christian Estrosi", "pct": 61 },
-          { "party": "RN",  "candidate": "TBD",               "pct": 39 }
+          { "party": "UDR",     "candidate": "Éric Ciotti",       "pct": 55 },
+          { "party": "Horizons","candidate": "Christian Estrosi", "pct": 45 }
         ],
         "source": "Local polling aggregate",
-        "date": "2026-02-01",
-        "margin_of_error": 5.0
-      }
+        "date": "2026-02-20",
+        "margin_of_error": 4.5,
+        "note": "An extraordinary intra-right duel between two former close allies. Ciotti is favoured but left-wing votes in round 2 could save Estrosi."
+      },
+      "local_papers": ["Nice-Matin", "Actu Nice"],
+      "analysis_keywords": ["Nice municipales", "Ciotti Estrosi Nice 2026", "mairie Nice"]
     },
     {
       "id": "nantes",
@@ -203,33 +210,34 @@
       "type": "major_mayoral",
       "population": 323000,
       "coordinates": [-1.5536, 47.2184],
-      "incumbent": {
-        "name": "Johanna Rolland",
-        "party": "PS",
-        "since": 2014
-      },
+      "context": "A solid PS stronghold for decades — Jean-Marc Ayrault governed for 23 years before becoming Hollande's prime minister, handing power to Johanna Rolland in 2014. Nantes has been celebrated for urban regeneration projects like the Île de Nantes and the 'Machines de l'Île' cultural installations. Rolland seeks a third term and leads in polls, but the right is united for the first time in years under Foulques Chombart de Lauwe with LR, Renaissance, Horizons and MoDem support. LFI's William Aucant runs separately. A rare city where the macronist and right-wing vote is consolidated rather than divided.",
+      "macron_endorsement": { "candidate": "Foulques Chombart de Lauwe", "party": "LR", "note": "Renaissance backs the joint LR-Horizons-MoDem list. Sarah El Haïry (Macron's former secretary of state for youth) is Chombart de Lauwe's number two." },
+      "incumbent": { "name": "Johanna Rolland", "party": "PS", "since": 2014 },
       "candidates": [
-        { "name": "Johanna Rolland", "party": "PS",          "role": "incumbent",  "list": "Nantes, la Vie devant Nous" },
-        { "name": "TBD",             "party": "LR",           "role": "challenger", "list": "Nantes Ambition" },
-        { "name": "TBD",             "party": "RN",           "role": "challenger", "list": "Nantes pour Tous" },
-        { "name": "TBD",             "party": "EELV",         "role": "challenger", "list": "Nantes Verte" }
+        { "name": "Johanna Rolland",          "party": "PS",  "role": "incumbent",    "list": "Nantes, la vie devant nous", "note": "PS + EELV + PCF + alliés. 3rd term bid." },
+        { "name": "Foulques Chombart de Lauwe","party": "LR",  "role": "centre-right", "list": "Nantes pour tous", "note": "LR + Horizons + MoDem + Renaissance. No. 2: Sarah El Haïry (MoDem, ex-minister)." },
+        { "name": "William Aucant",           "party": "LFI", "role": "hard left",    "list": "Nouvelle Nantes", "note": "Regional councillor." },
+        { "name": "Jean-Claude Hulot",        "party": "RN",  "role": "far right",    "list": "Pour une Nantes sûre" }
       ],
       "polls": {
         "round1": [
-          { "party": "PS",   "candidate": "Johanna Rolland", "pct": 33 },
-          { "party": "LR",   "candidate": "TBD",             "pct": 22 },
-          { "party": "RN",   "candidate": "TBD",             "pct": 20 },
-          { "party": "EELV", "candidate": "TBD",             "pct": 15 },
-          { "party": "Other","candidate": "Others",          "pct": 10 }
+          { "party": "PS",  "candidate": "Johanna Rolland",          "pct": 36 },
+          { "party": "LR",  "candidate": "Foulques Chombart de Lauwe","pct": 28 },
+          { "party": "LFI", "candidate": "William Aucant",           "pct": 18 },
+          { "party": "RN",  "candidate": "Jean-Claude Hulot",        "pct": 14 },
+          { "party": "Other","candidate": "Others",                  "pct": 4  }
         ],
         "round2_projection": [
-          { "party": "PS",  "candidate": "Johanna Rolland", "pct": 55 },
-          { "party": "LR",  "candidate": "TBD",             "pct": 45 }
+          { "party": "PS",  "candidate": "Johanna Rolland",           "pct": 56 },
+          { "party": "LR",  "candidate": "Foulques Chombart de Lauwe","pct": 44 }
         ],
         "source": "BVA poll",
-        "date": "2026-01-25",
-        "margin_of_error": 4.5
-      }
+        "date": "2026-02-10",
+        "margin_of_error": 4.5,
+        "note": "Rolland leads but the united right is closer than in 2020. LFI fusion decisions in round 2 will matter."
+      },
+      "local_papers": ["Ouest France", "Presse Océan", "Médiacités Nantes"],
+      "analysis_keywords": ["Nantes municipales", "Rolland Nantes 2026", "mairie Nantes"]
     },
     {
       "id": "strasbourg",
@@ -238,34 +246,38 @@
       "type": "major_mayoral",
       "population": 285000,
       "coordinates": [7.7521, 48.5734],
-      "incumbent": {
-        "name": "Jeanne Barseghian",
-        "party": "EELV",
-        "since": 2020
-      },
+      "context": "Strasbourg is the election's most unusual intra-left battle. Jeanne Barseghian won in 2020 as part of the green wave, becoming the city's first female and first Green mayor. But she faces an extraordinary challenger: Catherine Trautmann, the PS grande dame who was herself mayor of Strasbourg from 1989 to 2001 and a European Commissioner. At 72, Trautmann is making a comeback, polling 11 points ahead of the incumbent in some surveys. Rather than a left vs right contest, Strasbourg's 2026 election is a battle between two wings of the left — a referendum on the 'green wave' legacy.",
+      "macron_endorsement": { "candidate": "Pierre Jakubowicz", "party": "Horizons", "note": "Renaissance backs the Horizons candidate Jakubowicz, but with Trautmann and Barseghian dominating, the centrist vote is marginal here." },
+      "incumbent": { "name": "Jeanne Barseghian", "party": "EELV", "since": 2020 },
       "candidates": [
-        { "name": "Jeanne Barseghian", "party": "EELV",        "role": "incumbent",  "list": "Strasbourg Écologie" },
-        { "name": "TBD",               "party": "LR",           "role": "challenger", "list": "Strasbourg Forte" },
-        { "name": "TBD",               "party": "RN",           "role": "challenger", "list": "Strasbourg d'Abord" },
-        { "name": "TBD",               "party": "Renaissance",  "role": "challenger", "list": "Strasbourg Ensemble" }
+        { "name": "Jeanne Barseghian",   "party": "EELV", "role": "incumbent",      "list": "Strasbourg écologie et citoyenneté", "note": "First Green mayor of Strasbourg." },
+        { "name": "Catherine Trautmann", "party": "PS",   "role": "challenger",     "list": "Strasbourg, notre ville", "note": "Former mayor (1989–2001) and EU Commissioner. Polling 11pts ahead of Barseghian." },
+        { "name": "Jean-Philippe Vetter","party": "LR",   "role": "centre-right",   "list": "Strasbourg forte" },
+        { "name": "Virginie Joron",      "party": "RN",   "role": "far right",      "list": "Strasbourg d'abord" },
+        { "name": "Florian Kobryn",      "party": "LFI",  "role": "hard left",      "list": "Strasbourg insoumise" },
+        { "name": "Pierre Jakubowicz",   "party": "Horizons","role": "macron centrist","list": "Strasbourg ensemble" }
       ],
       "polls": {
         "round1": [
-          { "party": "EELV",        "candidate": "Jeanne Barseghian", "pct": 28 },
-          { "party": "LR",          "candidate": "TBD",               "pct": 24 },
-          { "party": "RN",          "candidate": "TBD",               "pct": 22 },
-          { "party": "Renaissance", "candidate": "TBD",               "pct": 16 },
-          { "party": "Other",       "candidate": "Others",            "pct": 10 }
+          { "party": "PS",      "candidate": "Catherine Trautmann",   "pct": 31 },
+          { "party": "EELV",    "candidate": "Jeanne Barseghian",     "pct": 20 },
+          { "party": "LR",      "candidate": "Jean-Philippe Vetter",  "pct": 19 },
+          { "party": "RN",      "candidate": "Virginie Joron",        "pct": 11 },
+          { "party": "LFI",     "candidate": "Florian Kobryn",        "pct": 10 },
+          { "party": "Horizons","candidate": "Pierre Jakubowicz",     "pct": 6  },
+          { "party": "Other",   "candidate": "Others",                "pct": 3  }
         ],
         "round2_projection": [
-          { "party": "EELV", "candidate": "Jeanne Barseghian", "pct": 51 },
-          { "party": "LR",   "candidate": "TBD",               "pct": 49 }
+          { "party": "PS",  "candidate": "Catherine Trautmann", "pct": 57 },
+          { "party": "LR",  "candidate": "Jean-Philippe Vetter","pct": 43 }
         ],
-        "source": "Local polling",
-        "date": "2026-02-03",
-        "margin_of_error": 5.0,
-        "note": "Extremely tight race — within margin of error."
-      }
+        "source": "Cluster17",
+        "date": "2026-02-18",
+        "margin_of_error": 4.5,
+        "note": "A historic intra-left contest. Trautmann, 72, is positioned to reclaim the city she governed 25 years ago."
+      },
+      "local_papers": ["Les Dernières Nouvelles d'Alsace", "Médiacités Strasbourg"],
+      "analysis_keywords": ["Strasbourg municipales", "Trautmann Barseghian 2026", "mairie Strasbourg"]
     },
     {
       "id": "bordeaux",
@@ -274,34 +286,35 @@
       "type": "major_mayoral",
       "population": 260000,
       "coordinates": [-0.5792, 44.8378],
-      "incumbent": {
-        "name": "Pierre Hurmic",
-        "party": "EELV",
-        "since": 2020
-      },
+      "context": "Bordeaux was a Gaullist and centre-right stronghold for over 30 years under Jacques Chaban-Delmas and then Alain Juppé (1995–2019). It was captured by the Greens in 2020 under Pierre Hurmic. His term has been polarising: celebrated by environmentalists for radical cycling measures and water conservation, but denounced by others for removing fountains, restricting public events in parks and what critics call ideological governance. Thomas Cazenave (Renaissance MP) leads the centrist challenge. A dissenting right-wing candidacy by Philippe Dessertine could split the anti-Hurmic vote.",
+      "macron_endorsement": { "candidate": "Thomas Cazenave", "party": "Renaissance", "note": "Cazenave is Renaissance's own candidate here — one of the few cities where Macron's party runs its own list rather than backing an ally." },
+      "incumbent": { "name": "Pierre Hurmic", "party": "EELV", "since": 2020 },
       "candidates": [
-        { "name": "Pierre Hurmic",  "party": "EELV",        "role": "incumbent",  "list": "Bordeaux Respirons" },
-        { "name": "TBD",            "party": "LR",           "role": "challenger", "list": "Bordeaux Centre Droit" },
-        { "name": "TBD",            "party": "RN",           "role": "challenger", "list": "Bordeaux d'Abord" },
-        { "name": "TBD",            "party": "Renaissance",  "role": "challenger", "list": "Bordeaux Ensemble" }
+        { "name": "Pierre Hurmic",     "party": "EELV",        "role": "incumbent",     "list": "Bordeaux respirons", "note": "EELV + PS + PCF coalition." },
+        { "name": "Thomas Cazenave",   "party": "Renaissance", "role": "macron centrist","list": "Bordeaux ensemble", "note": "MP for Bordeaux. Renaissance's direct candidate." },
+        { "name": "Philippe Dessertine","party": "DVD",         "role": "right dissident","list": "Bordeaux d'abord", "note": "University professor and economist. 15% polling threatens to split right-wing vote." },
+        { "name": "Nordine Raymond",   "party": "LFI",         "role": "hard left",     "list": "Bordeaux insoumise" }
       ],
       "polls": {
         "round1": [
-          { "party": "EELV",        "candidate": "Pierre Hurmic", "pct": 26 },
-          { "party": "LR",          "candidate": "TBD",           "pct": 24 },
-          { "party": "RN",          "candidate": "TBD",           "pct": 23 },
-          { "party": "Renaissance", "candidate": "TBD",           "pct": 15 },
-          { "party": "Other",       "candidate": "Others",        "pct": 12 }
+          { "party": "EELV",        "candidate": "Pierre Hurmic",      "pct": 33 },
+          { "party": "Renaissance", "candidate": "Thomas Cazenave",    "pct": 25 },
+          { "party": "DVD",         "candidate": "Philippe Dessertine","pct": 15 },
+          { "party": "LFI",         "candidate": "Nordine Raymond",    "pct": 12 },
+          { "party": "RN",          "candidate": "TBD",                "pct": 10 },
+          { "party": "Other",       "candidate": "Others",             "pct": 5  }
         ],
         "round2_projection": [
-          { "party": "LR",   "candidate": "TBD",           "pct": 52 },
-          { "party": "EELV", "candidate": "Pierre Hurmic", "pct": 48 }
+          { "party": "EELV",        "candidate": "Pierre Hurmic",   "pct": 50 },
+          { "party": "Renaissance", "candidate": "Thomas Cazenave", "pct": 50 }
         ],
-        "source": "Odoxa poll",
-        "date": "2026-01-30",
-        "margin_of_error": 5.0,
-        "note": "Very competitive three-way contest."
-      }
+        "source": "Cluster17",
+        "date": "2026-02-12",
+        "margin_of_error": 4.5,
+        "note": "Dead heat in projections. Dessertine's 15% is critical: if he fuses with Cazenave for round 2, Hurmic loses. If not, Hurmic likely holds."
+      },
+      "local_papers": ["Sud Ouest", "Médiacités Bordeaux", "Bordeaux Gazette"],
+      "analysis_keywords": ["Bordeaux municipales", "Hurmic Cazenave 2026", "mairie Bordeaux"]
     },
     {
       "id": "montpellier",
@@ -310,31 +323,33 @@
       "type": "major_mayoral",
       "population": 300000,
       "coordinates": [3.8767, 43.6108],
-      "incumbent": {
-        "name": "Michaël Delafosse",
-        "party": "PS",
-        "since": 2020
-      },
+      "context": "Montpellier is one of France's fastest-growing cities, driven by its universities, medical sector and Mediterranean lifestyle. It has been governed by the left since 1977. Michaël Delafosse won in 2020 with a broad left coalition and has pursued ambitious public transport expansion including free buses. Renaissance chose not to field a candidate here, reflecting the futility of the centrist vote in this reliably left city. The RN is mounting its strongest Montpellier challenge yet.",
+      "macron_endorsement": { "candidate": null, "note": "Renaissance chose not to field a candidate or endorse in Montpellier — an unusual absence reflecting the city's left-wing solidarity." },
+      "incumbent": { "name": "Michaël Delafosse", "party": "PS", "since": 2020 },
       "candidates": [
-        { "name": "Michaël Delafosse", "party": "PS",   "role": "incumbent",  "list": "Montpellier Méditerranée" },
-        { "name": "TBD",               "party": "RN",   "role": "challenger", "list": "Montpellier d'Abord" },
-        { "name": "TBD",               "party": "LR",   "role": "challenger", "list": "Montpellier Centre" }
+        { "name": "Michaël Delafosse", "party": "PS",  "role": "incumbent",  "list": "Montpellier ou jamais", "note": "PS + EELV + PCF coalition." },
+        { "name": "TBD",               "party": "RN",  "role": "far right",  "list": "Montpellier d'abord", "note": "RN mounting its strongest push in the city." },
+        { "name": "TBD",               "party": "LFI", "role": "hard left",  "list": "Montpellier insoumise" },
+        { "name": "TBD",               "party": "LR",  "role": "centre-right","list": "Montpellier pour tous" }
       ],
       "polls": {
         "round1": [
           { "party": "PS",   "candidate": "Michaël Delafosse", "pct": 34 },
           { "party": "RN",   "candidate": "TBD",               "pct": 28 },
-          { "party": "LR",   "candidate": "TBD",               "pct": 20 },
-          { "party": "Other","candidate": "Others",            "pct": 18 }
+          { "party": "LFI",  "candidate": "TBD",               "pct": 15 },
+          { "party": "LR",   "candidate": "TBD",               "pct": 14 },
+          { "party": "Other","candidate": "Others",            "pct": 9  }
         ],
         "round2_projection": [
-          { "party": "PS",  "candidate": "Michaël Delafosse", "pct": 56 },
-          { "party": "RN",  "candidate": "TBD",               "pct": 44 }
+          { "party": "PS",  "candidate": "Michaël Delafosse", "pct": 58 },
+          { "party": "RN",  "candidate": "TBD",               "pct": 42 }
         ],
         "source": "Local polling",
         "date": "2026-02-05",
         "margin_of_error": 5.0
-      }
+      },
+      "local_papers": ["Midi Libre", "Hérault Tribune"],
+      "analysis_keywords": ["Montpellier municipales 2026", "Delafosse 2026", "mairie Montpellier"]
     },
     {
       "id": "lille",
@@ -343,32 +358,37 @@
       "type": "major_mayoral",
       "population": 237000,
       "coordinates": [3.0573, 50.6292],
-      "incumbent": {
-        "name": "Martine Aubry",
-        "party": "PS",
-        "since": 2001,
-        "note": "Aubry has not confirmed she will seek a fifth term."
-      },
+      "context": "After 24 years under the iconic socialist grande dame Martine Aubry, Lille enters the most open mayoral race of a generation. Aubry passed the baton to her first deputy Arnaud Deslandes, who was named mayor in 2025 but lacks Aubry's formidable political personality. Three serious challengers threaten the PS hold: Violette Spillebout (Macron's MP candidate), Stéphane Baly (the Greens candidate who came close in 2020) and Louis Delemer (LR). The city synonymous with the French left faces genuine uncertainty for the first time in a quarter century.",
+      "macron_endorsement": { "candidate": "Violette Spillebout", "party": "Renaissance", "note": "Spillebout is a sitting Renaissance MP and has direct Macron coalition backing with MoDem and Horizons on her list." },
+      "incumbent": { "name": "Arnaud Deslandes", "party": "PS", "since": 2025, "note": "Took over from Martine Aubry in 2025 after 24 years of Aubry's tenure." },
       "candidates": [
-        { "name": "Martine Aubry (if running)", "party": "PS",   "role": "incumbent",  "list": "Lille Ensemble" },
-        { "name": "TBD",                         "party": "RN",   "role": "challenger", "list": "Lille d'Abord" },
-        { "name": "TBD",                         "party": "LR",   "role": "challenger", "list": "Lille Centre" }
+        { "name": "Arnaud Deslandes",    "party": "PS",          "role": "incumbent",    "list": "Lille en commun", "note": "Aubry's chosen successor. First test without her behind him." },
+        { "name": "Violette Spillebout", "party": "Renaissance", "role": "macron centrist","list": "Lille ensemble", "note": "Sitting MP, Renaissance + MoDem + Horizons. Second attempt after 2020." },
+        { "name": "Stéphane Baly",       "party": "EELV",        "role": "green",         "list": "Lille, la ville que nous voulons", "note": "Near-winner in 2020." },
+        { "name": "Louis Delemer",       "party": "LR",           "role": "centre-right",  "list": "Lille, ville d'avenir", "note": "LR + UDI. Supported by party president Bruno Retailleau." },
+        { "name": "Lahouaria Addouche",  "party": "LFI",          "role": "hard left",     "list": "Lille insoumise" },
+        { "name": "Matthieu Valet",      "party": "RN",           "role": "far right",     "list": "Rassemblement pour Lille", "note": "MEP." }
       ],
       "polls": {
         "round1": [
-          { "party": "PS",   "candidate": "PS List",  "pct": 36 },
-          { "party": "RN",   "candidate": "TBD",      "pct": 26 },
-          { "party": "LR",   "candidate": "TBD",      "pct": 18 },
-          { "party": "Other","candidate": "Others",   "pct": 20 }
+          { "party": "PS",          "candidate": "Arnaud Deslandes",    "pct": 28 },
+          { "party": "Renaissance", "candidate": "Violette Spillebout", "pct": 22 },
+          { "party": "EELV",        "candidate": "Stéphane Baly",       "pct": 18 },
+          { "party": "LR",          "candidate": "Louis Delemer",       "pct": 14 },
+          { "party": "RN",          "candidate": "Matthieu Valet",      "pct": 12 },
+          { "party": "LFI",         "candidate": "Lahouaria Addouche",  "pct": 6  }
         ],
         "round2_projection": [
-          { "party": "PS",  "candidate": "PS List",  "pct": 58 },
-          { "party": "RN",  "candidate": "TBD",      "pct": 42 }
+          { "party": "PS",          "candidate": "Arnaud Deslandes",    "pct": 51 },
+          { "party": "Renaissance", "candidate": "Violette Spillebout", "pct": 49 }
         ],
         "source": "BVA poll",
-        "date": "2026-01-18",
-        "margin_of_error": 5.0
-      }
+        "date": "2026-02-08",
+        "margin_of_error": 4.5,
+        "note": "Extremely tight potential runoff. The most open race in Lille in a generation. Baly's Greens are pivotal."
+      },
+      "local_papers": ["La Voix du Nord", "Médiacités Lille", "Nord Éclair"],
+      "analysis_keywords": ["Lille municipales", "Deslandes Spillebout 2026", "mairie Lille Aubry"]
     },
     {
       "id": "rennes",
@@ -377,31 +397,35 @@
       "type": "major_mayoral",
       "population": 223000,
       "coordinates": [-1.6778, 48.1173],
-      "incumbent": {
-        "name": "Nathalie Appéré",
-        "party": "PS",
-        "since": 2014
-      },
+      "context": "The Breton capital is one of France's most educated and dynamic cities, with a large student and tech sector population. Reliably left-wing — Nathalie Appéré won with 65% in 2020. She seeks a third term in a more competitive environment. LFI has a strong presence with MP Marie Mesmeur as candidate, and the right runs under the Horizons-Renaissance ticket. With 11 lists competing, the first round could be unpredictable. Rennes remains likely left, but the margin will be much tighter than 2020.",
+      "macron_endorsement": { "candidate": "Charles Compagnon / Carole Gandon", "party": "Horizons", "note": "A joint Horizons-Renaissance-MoDem list under 'Vivre Rennes!'." },
+      "incumbent": { "name": "Nathalie Appéré", "party": "PS", "since": 2014 },
       "candidates": [
-        { "name": "Nathalie Appéré", "party": "PS",    "role": "incumbent",  "list": "Rennes, la Ville que Nous Aimons" },
-        { "name": "TBD",             "party": "LR",    "role": "challenger", "list": "Rennes Ambition" },
-        { "name": "TBD",             "party": "RN",    "role": "challenger", "list": "Rennes d'Abord" }
+        { "name": "Nathalie Appéré",  "party": "PS",      "role": "incumbent",    "list": "Rennes, la ville que nous aimons", "note": "PS + EELV + PCF. 3rd term." },
+        { "name": "Marie Mesmeur",    "party": "LFI",     "role": "hard left",    "list": "Rennes insoumise", "note": "MP for Rennes 1st constituency." },
+        { "name": "Carole Gandon",    "party": "Horizons","role": "macron centrist","list": "Vivre Rennes !", "note": "Joint Horizons + Renaissance + MoDem. Two co-leaders." },
+        { "name": "Thomas Rousseau",  "party": "LR",      "role": "centre-right", "list": "L'Espoir rennais", "note": "LR secretary for Ille-et-Vilaine." },
+        { "name": "Julien Masson",    "party": "RN",      "role": "far right",    "list": "Rassemblement pour Rennes" }
       ],
       "polls": {
         "round1": [
-          { "party": "PS",   "candidate": "Nathalie Appéré", "pct": 38 },
-          { "party": "LR",   "candidate": "TBD",             "pct": 24 },
-          { "party": "RN",   "candidate": "TBD",             "pct": 18 },
-          { "party": "Other","candidate": "Others",          "pct": 20 }
+          { "party": "PS",      "candidate": "Nathalie Appéré", "pct": 38 },
+          { "party": "LFI",     "candidate": "Marie Mesmeur",   "pct": 18 },
+          { "party": "Horizons","candidate": "Carole Gandon",   "pct": 16 },
+          { "party": "LR",      "candidate": "Thomas Rousseau", "pct": 14 },
+          { "party": "RN",      "candidate": "Julien Masson",   "pct": 10 },
+          { "party": "Other",   "candidate": "Others",          "pct": 4  }
         ],
         "round2_projection": [
           { "party": "PS",  "candidate": "Nathalie Appéré", "pct": 60 },
-          { "party": "LR",  "candidate": "TBD",             "pct": 40 }
+          { "party": "LR",  "candidate": "Thomas Rousseau", "pct": 40 }
         ],
         "source": "Local polling",
         "date": "2026-01-22",
         "margin_of_error": 5.5
-      }
+      },
+      "local_papers": ["Ouest France", "Unidivers", "Médiacités Rennes"],
+      "analysis_keywords": ["Rennes municipales", "Appéré Rennes 2026", "mairie Rennes"]
     },
     {
       "id": "grenoble",
@@ -410,41 +434,46 @@
       "type": "major_mayoral",
       "population": 160000,
       "coordinates": [5.7245, 45.1885],
-      "incumbent": {
-        "name": "Éric Piolle",
-        "party": "EELV",
-        "since": 2014
-      },
+      "context": "Home to Europe's largest science and technology cluster, Grenoble has been a laboratory for radical green and left politics under Éric Piolle (2014–2026 — two full terms). Piolle chose not to seek a third term. His successor is Laurence Ruffin, sister of the famous left-wing deputy François Ruffin. She represents a broad EELV-PS-PCF coalition. Her main challenger is the legendary Alain Carignon — LR mayor of Grenoble from 1983 to 1995, who was convicted of corruption and sentenced to prison in 1996 before returning to civic life. At 73, his comeback bid is one of the election's most remarkable stories.",
+      "macron_endorsement": { "candidate": "Hervé Gerbi", "party": "Horizons", "note": "Horizons backs Gerbi. Renaissance has no separate list. The centrist vote is small in this left-leaning university city." },
+      "incumbent": { "name": "Éric Piolle", "party": "EELV", "since": 2014, "note": "Not running for a third term. Endorsed Laurence Ruffin." },
       "candidates": [
-        { "name": "Éric Piolle",  "party": "EELV",  "role": "incumbent",  "list": "Grenoble en Commun" },
-        { "name": "TBD",          "party": "LR",    "role": "challenger", "list": "Grenoble Centre Droit" },
-        { "name": "TBD",          "party": "RN",    "role": "challenger", "list": "Grenoble d'Abord" }
+        { "name": "Laurence Ruffin",   "party": "EELV",    "role": "left coalition","list": "Grenoble en commun", "note": "Sister of deputy François Ruffin. EELV + PS + PCF + Génération.s. Piolle's chosen successor." },
+        { "name": "Alain Carignon",    "party": "LR",      "role": "centre-right", "list": "Grenoble forte", "note": "Former mayor (1983–95), convicted of corruption in 1996, returned to civic life. LR candidate at 73." },
+        { "name": "Allan Brunon",      "party": "LFI",     "role": "hard left",    "list": "Grenoble insoumise", "note": "LFI candidate. Some local Insoumis dissidents actually backed Ruffin." },
+        { "name": "Hervé Gerbi",       "party": "Horizons","role": "macron centrist","list": "Grenoble capitale citoyenne", "note": "Horizons candidate, also backed by PRG and Place Publique." },
+        { "name": "Valentin Gabriac",  "party": "RN",      "role": "far right",    "list": "Rassemblement pour Grenoble" }
       ],
       "polls": {
         "round1": [
-          { "party": "EELV", "candidate": "Éric Piolle", "pct": 34 },
-          { "party": "LR",   "candidate": "TBD",         "pct": 26 },
-          { "party": "RN",   "candidate": "TBD",         "pct": 20 },
-          { "party": "Other","candidate": "Others",      "pct": 20 }
+          { "party": "EELV",    "candidate": "Laurence Ruffin", "pct": 32 },
+          { "party": "LR",      "candidate": "Alain Carignon",  "pct": 26 },
+          { "party": "LFI",     "candidate": "Allan Brunon",    "pct": 16 },
+          { "party": "Horizons","candidate": "Hervé Gerbi",     "pct": 13 },
+          { "party": "RN",      "candidate": "Valentin Gabriac","pct": 11 },
+          { "party": "Other",   "candidate": "Others",          "pct": 2  }
         ],
         "round2_projection": [
-          { "party": "EELV", "candidate": "Éric Piolle", "pct": 55 },
-          { "party": "LR",   "candidate": "TBD",         "pct": 45 }
+          { "party": "EELV", "candidate": "Laurence Ruffin", "pct": 55 },
+          { "party": "LR",   "candidate": "Alain Carignon",  "pct": 45 }
         ],
         "source": "Local polling",
-        "date": "2026-01-20",
-        "margin_of_error": 5.5
-      }
+        "date": "2026-02-01",
+        "margin_of_error": 5.0,
+        "note": "Carignon's comeback is extraordinary but Ruffin is favoured with LFI fusion support."
+      },
+      "local_papers": ["Le Dauphiné Libéré", "Médiacités Grenoble", "Place Gre'net"],
+      "analysis_keywords": ["Grenoble municipales", "Ruffin Carignon Grenoble 2026", "mairie Grenoble"]
     }
   ],
   "departement_map": {
-    "note": "Departement-level shading uses the party of the largest commune's incumbent mayor as a proxy. This will be updated with actual results.",
+    "note": "Département-level shading uses the party of the largest commune's current mayor as a proxy. Will update with actual results.",
     "mapping": {
-      "75": "PS", "13": "PS", "69": "EELV", "31": "LR", "06": "LR",
+      "75": "PS", "13": "PS", "69": "EELV", "31": "DVD", "06": "Horizons",
       "44": "PS", "67": "EELV", "33": "EELV", "34": "PS", "59": "PS",
-      "35": "PS", "38": "EELV", "76": "PS", "57": "DVG", "06": "LR",
-      "29": "PS", "22": "PS", "56": "PS", "85": "DVD", "49": "PS",
-      "37": "DVD", "41": "DVD", "45": "DVD", "28": "DVD", "91": "PS",
+      "35": "PS", "38": "EELV", "76": "PS", "57": "DVG", "29": "PS",
+      "22": "PS", "56": "PS", "85": "DVD", "49": "PS", "37": "DVD",
+      "41": "DVD", "45": "DVD", "28": "DVD", "91": "PS",
       "92": "Renaissance", "93": "NFP", "94": "NFP", "95": "RN",
       "77": "DVD", "78": "LR", "60": "DVD", "02": "RN", "08": "RN",
       "51": "DVD", "52": "DVD", "10": "DVD", "89": "DVD", "21": "DVD",
@@ -454,8 +483,8 @@
       "15": "DVD", "19": "PS", "23": "DVD", "87": "PS", "16": "DVD",
       "17": "DVD", "79": "DVD", "86": "DVD", "36": "DVD", "03": "DVD",
       "58": "DVD", "18": "DVD", "53": "DVD", "72": "DVD", "61": "DVD",
-      "14": "DVD", "50": "DVD", "27": "DVD", "76": "PS", "80": "RN",
-      "62": "RN", "59": "PS", "55": "DVD", "54": "DVD", "88": "DVD",
+      "14": "DVD", "50": "DVD", "27": "DVD", "80": "RN",
+      "62": "RN", "55": "DVD", "54": "DVD", "88": "DVD",
       "70": "DVD", "25": "DVD", "39": "DVD", "90": "DVD", "68": "DVD",
       "972": "PS", "971": "DVG", "973": "DVG", "974": "DVG", "976": "DVG"
     }

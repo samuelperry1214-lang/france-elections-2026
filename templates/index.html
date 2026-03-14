@@ -4,18 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>France Municipal Elections 2026</title>
-
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- App CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
+  <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
       <div class="header-left">
@@ -28,14 +24,13 @@
       <div class="header-right">
         <div id="election-status-badge" class="status-badge status-pre"></div>
         <div class="header-dates">
-          <span class="date-item"><strong>Round 1:</strong> 22 March 2026</span>
-          <span class="date-item"><strong>Round 2:</strong> 29 March 2026</span>
+          <span class="date-item"><strong>Round 1:</strong> 15 March 2026</span>
+          <span class="date-item"><strong>Round 2:</strong> 22 March 2026</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ===== MAIN CONTENT ===== -->
   <main class="main-content">
 
     <!-- MAP SECTION -->
@@ -43,45 +38,66 @@
       <div class="section-header">
         <h2 class="section-title">Results by Constituency</h2>
         <div class="map-controls">
-          <button id="btn-overview" class="map-btn active" title="Show département overview">Overview</button>
-          <button id="btn-zoom-major" class="map-btn" title="Zoom to major cities">Major Cities</button>
-          <div class="view-toggle">
-            <label class="toggle-label">
-              <input type="checkbox" id="toggle-mayoral" checked />
-              Highlight Mayoral Races
-            </label>
-          </div>
+          <button id="btn-overview" class="map-btn active">Overview</button>
+          <button id="btn-zoom-major" class="map-btn">Major Cities</button>
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-mayoral" checked />
+            Highlight Mayoral Races
+          </label>
         </div>
       </div>
 
-      <!-- Map container + side panel -->
       <div class="map-wrapper">
         <div id="map" class="map-container"></div>
-
-        <!-- Hover / click panel -->
         <div id="race-panel" class="race-panel hidden">
           <button class="panel-close" id="panel-close">&times;</button>
           <div id="race-panel-content"></div>
         </div>
       </div>
 
-      <!-- Legend -->
       <div class="map-legend">
-        <span class="legend-label">Winner / Leading party:</span>
+        <span class="legend-label">Leading party:</span>
         <div id="legend-items" class="legend-items"></div>
-        <span class="legend-note" id="legend-note">Showing polling projections &mdash; not election results</span>
+        <button id="legend-party-btn" class="map-btn" style="margin-left:auto;font-size:0.7rem;">Party Guide</button>
+        <span class="legend-note" id="legend-note">Showing polling projections</span>
       </div>
     </section>
 
-    <!-- NATIONAL SUMMARY BAR -->
-    <section class="summary-section">
-      <div class="summary-inner">
-        <h3 class="summary-title">Key Races at a Glance</h3>
-        <div id="races-grid" class="races-grid">
-          <!-- Populated by JS -->
+    <!-- PARTY GUIDE MODAL -->
+    <div id="party-modal-overlay" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">Party Guide &amp; Political Matrix</h2>
+          <button class="modal-close" id="party-modal-close">&times;</button>
         </div>
+        <div class="matrix-axis-labels">
+          <span class="axis-left">← Hard Left</span>
+          <span class="axis-right">Hard Right →</span>
+        </div>
+        <div class="matrix-track" id="party-matrix-track"></div>
+        <div id="party-descriptions" class="party-descriptions"></div>
       </div>
+    </div>
+
+    <!-- KEY RACES GRID -->
+    <section class="summary-section">
+      <div class="section-header">
+        <h3 class="summary-title">Key Races at a Glance</h3>
+        <p class="summary-subtitle">Click any race card to read context, analysis &amp; latest news</p>
+      </div>
+      <div id="races-grid" class="races-grid"></div>
     </section>
+
+    <!-- RACE DETAIL MODAL (opened from race cards) -->
+    <div id="race-modal-overlay" class="modal-overlay hidden">
+      <div class="modal-box modal-wide">
+        <div class="modal-header">
+          <h2 class="modal-title" id="race-modal-title"></h2>
+          <button class="modal-close" id="race-modal-close">&times;</button>
+        </div>
+        <div id="race-modal-content" class="race-modal-content"></div>
+      </div>
+    </div>
 
     <!-- NEWS MONITOR -->
     <section class="news-section">
@@ -91,27 +107,21 @@
           <button class="news-filter-btn active" data-source="all">All Sources</button>
           <button class="news-filter-btn" data-source="Le Monde">Le Monde</button>
           <button class="news-filter-btn" data-source="Le Figaro">Le Figaro</button>
+          <button class="news-filter-btn" data-source="France Info">France Info</button>
           <button class="news-filter-btn" data-source="Paris Playbook">Paris Playbook</button>
         </div>
-        <button id="refresh-news" class="refresh-btn" title="Refresh news">&#8635; Refresh</button>
+        <button id="refresh-news" class="refresh-btn">&#8635; Refresh</button>
       </div>
-
       <div id="news-grid" class="news-grid">
-        <div class="news-loading">
-          <div class="spinner"></div>
-          <p>Loading election news&hellip;</p>
-        </div>
+        <div class="news-loading"><div class="spinner"></div><p>Loading election news&hellip;</p></div>
       </div>
     </section>
 
   </main>
 
-  <!-- ===== TOOLTIP ===== -->
   <div id="map-tooltip" class="map-tooltip hidden"></div>
 
-  <!-- ===== SCRIPTS ===== -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-
 </body>
 </html>

@@ -725,6 +725,307 @@ body {
 .hidden { display: none !important; }
 
 /* ============================================================
+   MODALS (party guide + race detail)
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-box {
+  background: var(--surface);
+  border-radius: 6px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-wide { max-width: 980px; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 2px solid var(--text-primary);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  line-height: 1;
+}
+.modal-close:hover { color: var(--text-primary); }
+
+/* ── Party matrix ── */
+.matrix-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 14px 24px 0;
+}
+
+.matrix-track {
+  position: relative;
+  height: 52px;
+  margin: 8px 24px 4px;
+  border-bottom: 2px solid var(--border);
+}
+
+.matrix-dot {
+  position: absolute;
+  bottom: -6px;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: default;
+}
+
+.matrix-dot-label {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+/* ── Party description cards ── */
+.party-descriptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.party-desc-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.party-desc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--surface-alt);
+  flex-wrap: wrap;
+}
+
+.party-desc-short {
+  font-weight: 900;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.party-desc-name {
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex: 1;
+}
+
+.party-desc-pos {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.party-desc-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding: 8px 10px;
+}
+
+/* ── Race detail modal layout ── */
+.race-modal-content { padding: 0 20px 20px; }
+
+.race-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding-top: 16px;
+}
+
+.modal-section { margin-bottom: 16px; }
+
+.modal-section-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 3px;
+}
+
+.race-context-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.macron-box {
+  background: var(--surface-alt);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 0.78rem;
+}
+
+.macron-note {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.candidate-list {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.candidate-note {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin: 2px 0 6px 24px;
+  font-style: italic;
+}
+
+/* Race modal news panel */
+.race-modal-news { display: flex; flex-direction: column; gap: 8px; }
+
+.city-news-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 0.78rem;
+}
+
+.city-news-source {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #fff;
+  padding: 3px 8px;
+}
+
+.city-news-body { padding: 8px 10px; }
+
+.city-news-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  line-height: 1.35;
+  display: block;
+}
+.city-news-title:hover { color: var(--accent); text-decoration: underline; }
+
+.city-news-summary {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.no-city-news {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px;
+}
+
+/* ── Race card extras ── */
+.macron-tag {
+  font-size: 0.64rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.macron-none { opacity: 0.5; }
+
+.race-card-cta {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+}
+
+/* ── Panel more button ── */
+.panel-more-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 7px;
+  background: var(--text-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+.panel-more-btn:hover { background: var(--accent); }
+
+/* Summary section subtitle */
+.summary-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Responsive modal ── */
+@media (max-width: 768px) {
+  .race-modal-grid      { grid-template-columns: 1fr; }
+  .party-descriptions   { grid-template-columns: 1fr; }
+  .modal-box            { max-height: 92vh; }
+}
+
+/* ============================================================
    LEAFLET OVERRIDES
    ============================================================ */
 .leaflet-container {

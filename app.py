@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -13,9 +13,10 @@ CORS(app)
 CACHE_TTL = 300  # 5 minutes
 
 _cache = {
-    "news": {"data": [], "updated": None},
-    "polls": {"data": {}, "updated": None},
-    "results": {"data": {}, "updated": None},
+    "news":       {"data": [],  "updated": None},
+    "city_news":  {"data": {},  "updated": None},
+    "polls":      {"data": {},  "updated": None},
+    "results":    {"data": {},  "updated": None},
 }
 
 
@@ -43,11 +44,46 @@ def get_news():
     if cache_stale("news"):
         from scrapers.news import scrape_all_news
         try:
-            _cache["news"]["data"] = scrape_all_news()
+            _cache["news"]["data"]    = scrape_all_news()
             _cache["news"]["updated"] = datetime.now()
         except Exception as e:
             app.logger.error(f"News scrape failed: {e}")
     return jsonify(_cache["news"]["data"])
+
+
+@app.route("/api/news/<city_id>")
+def get_city_news(city_id: str):
+    """Returns news articles relevant to a specific city."""
+    city_cache = _cache["city_news"]["data"]
+    city_updated = _cache["city_news"].get("updated_cities", {})
+
+    stale = city_updated.get(city_id) is None or \
+            (datetime.now() - city_updated.get(city_id, datetime.min)).total_seconds() > CACHE_TTL
+
+    if stale:
+        from scrapers.news import scrape_city_news
+        # Load keywords from candidates.json
+        try:
+            cpath = os.path.join(os.path.dirname(__file__), "data", "candidates.json")
+            with open(cpath, "r", encoding="utf-8") as f:
+                cdata = json.load(f)
+            race = next((r for r in cdata["major_races"] if r["id"] == city_id), None)
+            keywords = race["analysis_keywords"] if race else [city_id]
+        except Exception:
+            keywords = [city_id]
+
+        try:
+            items = scrape_city_news(city_id, keywords)
+            city_cache[city_id] = items
+            _cache["city_news"]["data"] = city_cache
+            if "updated_cities" not in _cache["city_news"]:
+                _cache["city_news"]["updated_cities"] = {}
+            _cache["city_news"]["updated_cities"][city_id] = datetime.now()
+        except Exception as e:
+            app.logger.error(f"City news scrape failed for {city_id}: {e}")
+            city_cache[city_id] = []
+
+    return jsonify(city_cache.get(city_id, []))
 
 
 @app.route("/api/polls")
@@ -55,7 +91,7 @@ def get_polls():
     if cache_stale("polls"):
         from scrapers.polls import scrape_all_polls
         try:
-            _cache["polls"]["data"] = scrape_all_polls()
+            _cache["polls"]["data"]    = scrape_all_polls()
             _cache["polls"]["updated"] = datetime.now()
         except Exception as e:
             app.logger.error(f"Polls scrape failed: {e}")
@@ -67,7 +103,7 @@ def get_results():
     if cache_stale("results"):
         from scrapers.results import fetch_results
         try:
-            _cache["results"]["data"] = fetch_results()
+            _cache["results"]["data"]    = fetch_results()
             _cache["results"]["updated"] = datetime.now()
         except Exception as e:
             app.logger.error(f"Results fetch failed: {e}")
@@ -76,7 +112,6 @@ def get_results():
 
 @app.route("/api/status")
 def get_status():
-    """Returns whether election results are live yet."""
     from scrapers.results import election_status
     return jsonify(election_status())
 
