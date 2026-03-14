@@ -86,16 +86,65 @@ function openPartyModal() {
 
   // Build matrix track
   track.innerHTML = "";
+
+  // The spectrum line sits behind the dots
+  const line = document.createElement("div");
+  line.className = "matrix-line";
+  track.appendChild(line);
+
   const sorted = Object.entries(PARTY_POSITION).sort((a, b) => a[1] - b[1]);
-  sorted.forEach(([key, pos]) => {
+
+  sorted.forEach(([key, pos], i) => {
     const info = parties[key];
     if (!info) return;
+
     const dot = document.createElement("div");
     dot.className = "matrix-dot";
     dot.style.left = pos + "%";
     dot.style.background = info.color;
-    dot.title = info.name;
-    dot.innerHTML = `<span class="matrix-dot-label">${info.short}</span>`;
+    dot.setAttribute("data-party", key);
+
+    // Stagger labels: even index → above the dot, odd → below
+    const above = i % 2 === 0;
+    const label = document.createElement("span");
+    label.className = "matrix-dot-label " + (above ? "label-above" : "label-below");
+    label.textContent = info.short;
+    label.style.color = info.color;
+    dot.appendChild(label);
+
+    // Click / tap → popup card below the track
+    dot.addEventListener("click", () => {
+      // Deactivate all other dots
+      track.querySelectorAll(".matrix-dot").forEach(d => d.classList.remove("active"));
+      // Remove existing popup
+      const old = document.getElementById("matrix-popup-card");
+      if (old) {
+        // If clicking the same dot again, just close
+        if (old.dataset.party === key) { old.remove(); return; }
+        old.remove();
+      }
+      dot.classList.add("active");
+
+      const card = document.createElement("div");
+      card.id = "matrix-popup-card";
+      card.className = "matrix-popup-card";
+      card.dataset.party = key;
+      // Clamp arrow position so it doesn't fall off card edges
+      const arrowPct = Math.min(Math.max(pos, 6), 94);
+      card.style.setProperty("--arrow-left", arrowPct + "%");
+
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;border-left:4px solid ${info.color};padding-left:10px">
+          <span style="color:${info.color};font-weight:900;font-size:1rem">${info.short}</span>
+          <span style="font-weight:700">${info.name}</span>
+        </div>
+        <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:6px">${info.position || ""}</div>
+        <p style="font-size:0.76rem;color:var(--text-secondary);line-height:1.55;margin:0">${info.description || ""}</p>`;
+
+      // Insert immediately after the track
+      track.insertAdjacentElement("afterend", card);
+    });
+
     track.appendChild(dot);
   });
 
@@ -535,6 +584,8 @@ function updateStatusBadge(status) {
 }
 
 // ── News ──────────────────────────────────────────────────────
+let _expandedCards = new Set(); // track which playbook cards are expanded
+
 function renderNews(items) {
   const grid = document.getElementById("news-grid");
   const filtered = activeFilter === "all" ? items : items.filter(i => i.source === activeFilter);
@@ -542,23 +593,70 @@ function renderNews(items) {
     grid.innerHTML = `<div class="news-error">No election news found for this source. Try refreshing or select a different filter.</div>`;
     return;
   }
-  grid.innerHTML = filtered.map(item => `
-    <div class="news-card">
+
+  grid.innerHTML = filtered.map((item, idx) => buildNewsCard(item, idx)).join("");
+
+  // Wire up Playbook expand buttons
+  grid.querySelectorAll(".playbook-expand-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx   = btn.dataset.idx;
+      const panel = document.getElementById(`playbook-full-${idx}`);
+      const expanded = _expandedCards.has(idx);
+      if (expanded) {
+        panel.classList.add("hidden");
+        btn.textContent = "Read full newsletter ▾";
+        _expandedCards.delete(idx);
+      } else {
+        panel.classList.remove("hidden");
+        btn.textContent = "Collapse ▴";
+        _expandedCards.add(idx);
+      }
+    });
+  });
+}
+
+function buildNewsCard(item, idx) {
+  const isPlaybook  = item.is_playbook;
+  const hasFullText = isPlaybook && item.full_text && item.full_text.length > 100;
+  const translated  = item.title_original && item.title_original !== item.title;
+  const paywallNote = item.paywall_note || "";
+
+  // Format summary paragraphs (newlines → <p>)
+  const summaryHtml = item.summary
+    ? item.summary.split("\n").filter(Boolean).slice(0, 3)
+        .map(p => `<p class="news-card-summary">${p}</p>`).join("")
+    : "";
+
+  const fullHtml = hasFullText
+    ? item.full_text.split("\n").filter(Boolean)
+        .map(p => `<p style="font-size:0.8rem;line-height:1.6;color:var(--text-secondary);margin-bottom:8px">${p}</p>`)
+        .join("")
+    : "";
+
+  return `
+    <div class="news-card${isPlaybook ? " news-card-playbook" : ""}">
       <div class="news-card-source" style="background:${item.color}">
-        <div class="source-logo">${item.logo}</div>${item.source}
+        <div class="source-logo">${item.logo}</div>
+        <span>${item.source}</span>
+        ${translated ? '<span class="source-translated-badge">FR→EN</span>' : ""}
       </div>
       <div class="news-card-body">
         <div class="news-card-title">
-          <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+          ${isPlaybook
+            ? `<span class="playbook-title">${item.title}</span>`
+            : `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>`}
         </div>
-        ${item.summary ? `<div class="news-card-summary">${item.summary}</div>` : ""}
+        ${item.published ? `<div class="news-card-date">${item.published}</div>` : ""}
+        ${summaryHtml}
+        ${paywallNote ? `<p class="paywall-note">ℹ ${paywallNote}</p>` : ""}
+        ${hasFullText ? `
+          <button class="playbook-expand-btn" data-idx="${idx}">Read full newsletter ▾</button>
+          <div id="playbook-full-${idx}" class="playbook-full-text hidden">${fullHtml}
+            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="playbook-source-link">View original at Politico →</a>
+          </div>` : ""}
+        ${!isPlaybook ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="news-read-link">Read article →</a>` : ""}
       </div>
-      <div class="news-card-footer">
-        <span>${item.published || ""}</span>
-        ${item.title_original !== item.title ? '<span class="translated-tag">Translated from French</span>' : ""}
-      </div>
-    </div>`
-  ).join("");
+    </div>`;
 }
 
 function loadNews() {

@@ -690,6 +690,93 @@ body {
   font-style: italic;
 }
 
+/* Paris Playbook card — slightly distinct */
+.news-card-playbook {
+  border-color: #2980b9;
+}
+
+.news-card-playbook .news-card-body {
+  background: #f0f6fd;
+}
+
+.playbook-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.news-card-date {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.source-translated-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  background: rgba(255,255,255,0.25);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: auto;
+  letter-spacing: 0.04em;
+}
+
+.paywall-note {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 6px;
+  border-left: 2px solid var(--border);
+  padding-left: 6px;
+}
+
+.playbook-expand-btn {
+  margin-top: 10px;
+  font-family: var(--font);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #2980b9;
+  background: none;
+  border: 1.5px solid #2980b9;
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.playbook-expand-btn:hover {
+  background: #2980b9;
+  color: #fff;
+}
+
+.playbook-full-text {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.playbook-source-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2980b9;
+  text-decoration: none;
+}
+.playbook-source-link:hover { text-decoration: underline; }
+
+.news-read-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+.news-read-link:hover { text-decoration: underline; }
+
 /* Loading state */
 .news-loading {
   grid-column: 1 / -1;
@@ -781,45 +868,112 @@ body {
 .modal-close:hover { color: var(--text-primary); }
 
 /* ── Party matrix ── */
+
+/* Axis labels: "Hard Left" / "Hard Right" sit ABOVE everything in the track */
 .matrix-axis-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   color: var(--text-muted);
-  padding: 14px 24px 0;
+  padding: 14px 24px 6px;
+  border-bottom: 1px dashed var(--border);
 }
 
+/* Track: tall enough for above-label zone + dot + below-label zone */
 .matrix-track {
   position: relative;
-  height: 52px;
-  margin: 8px 24px 4px;
-  border-bottom: 2px solid var(--border);
+  height: 80px;
+  margin: 0 24px 8px;
+}
+
+/* The horizontal spectrum line, centred vertically */
+.matrix-line {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--border);
+  transform: translateY(-50%);
 }
 
 .matrix-dot {
   position: absolute;
-  bottom: -6px;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 12px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  cursor: default;
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.12s;
 }
 
+.matrix-dot:hover,
+.matrix-dot.active { transform: translate(-50%, -50%) scale(1.5); }
+
+/* Labels alternate above / below the dot to avoid collision */
 .matrix-dot-label {
   position: absolute;
-  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.6rem;
-  font-weight: 800;
+  font-size: 0.58rem;
+  font-weight: 900;
   white-space: nowrap;
-  color: var(--text-primary);
+  pointer-events: none;
+}
+.label-above { bottom: calc(100% + 5px); }
+.label-below { top:    calc(100% + 5px); }
+
+/* Popup card — slides in below the track on dot click/tap */
+.matrix-popup-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin: 0 24px 12px;
+  font-size: 0.78rem;
+  box-shadow: var(--shadow);
+  animation: fadeSlideIn 0.15s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Arrow pointing up toward the dot that was clicked */
+.matrix-popup-card::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: var(--arrow-left, 50%);
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--border);
+}
+.matrix-popup-card::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: var(--arrow-left, 50%);
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--surface);
+}
+
+/* Mobile: hide text labels entirely — dots only, tap → popup card */
+@media (max-width: 640px) {
+  .matrix-dot-label   { display: none; }
+  .matrix-track       { height: 36px; }
+  .matrix-dot         { width: 18px; height: 18px; } /* bigger touch target */
+  .matrix-popup-card  { margin: 0 12px 12px; }
+  .matrix-axis-labels { padding: 10px 12px 5px; font-size: 0.6rem; }
 }
 
 /* ── Party description cards ── */
