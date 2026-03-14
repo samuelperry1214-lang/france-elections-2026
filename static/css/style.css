@@ -454,13 +454,13 @@ body {
 
 .map-tooltip.hidden { display: none; }
 
-/* Mayor star marker */
-.mayor-star-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
+/* Mayor race dot marker */
+.mayor-dot-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.5);
   cursor: pointer;
 }
 
@@ -695,6 +695,15 @@ body {
   border-color: #2980b9;
 }
 
+.playbook-summary-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #2980b9;
+  margin: 6px 0 4px;
+}
+
 .news-card-playbook .news-card-body {
   background: #f0f6fd;
 }
@@ -869,31 +878,18 @@ body {
 
 /* ── Party matrix ── */
 
-/* Axis labels: "Hard Left" / "Hard Right" sit ABOVE everything in the track */
-.matrix-axis-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-muted);
-  padding: 14px 24px 6px;
-  border-bottom: 1px dashed var(--border);
-}
-
-/* Track: tall enough for above-label zone + dot + below-label zone */
+/* Track: tall enough for staggered labels above + dot row + axis labels below */
 .matrix-track {
   position: relative;
-  height: 80px;
-  margin: 0 24px 8px;
+  height: 110px;
+  margin: 14px 24px 8px;
 }
 
-/* The horizontal spectrum line, centred vertically */
+/* The horizontal spectrum line, sits at 45% from top */
 .matrix-line {
   position: absolute;
   left: 0; right: 0;
-  top: 50%;
+  top: 45%;
   height: 2px;
   background: var(--border);
   transform: translateY(-50%);
@@ -901,20 +897,34 @@ body {
 
 .matrix-dot {
   position: absolute;
-  top: 50%;
+  top: 45%;
   transform: translate(-50%, -50%);
-  width: 13px;
-  height: 13px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,.3);
   cursor: pointer;
   z-index: 2;
   transition: transform 0.12s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .matrix-dot:hover,
-.matrix-dot.active { transform: translate(-50%, -50%) scale(1.5); }
+.matrix-dot.active { transform: translate(-50%, -50%) scale(1.3); }
+
+/* Sequential number inside each dot */
+.matrix-dot-number {
+  font-size: 8px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 3;
+  user-select: none;
+}
 
 /* Labels alternate above / below the dot to avoid collision */
 .matrix-dot-label {
@@ -926,8 +936,21 @@ body {
   white-space: nowrap;
   pointer-events: none;
 }
-.label-above { bottom: calc(100% + 5px); }
-.label-below { top:    calc(100% + 5px); }
+.label-above { bottom: calc(100% + 6px); }
+.label-below { top:    calc(100% + 6px); }
+
+/* "Hard Left" / "Hard Right" axis labels anchored inside the track at the bottom */
+.matrix-axis-inside-label {
+  position: absolute;
+  bottom: 4px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+.axis-left-inside  { left: 0; }
+.axis-right-inside { right: 0; }
 
 /* Popup card — slides in below the track on dot click/tap */
 .matrix-popup-card {
@@ -967,13 +990,14 @@ body {
   border-bottom-color: var(--surface);
 }
 
-/* Mobile: hide text labels entirely — dots only, tap → popup card */
+/* Mobile: hide text labels — show numbers only inside dots, tap → popup card */
 @media (max-width: 640px) {
-  .matrix-dot-label   { display: none; }
-  .matrix-track       { height: 36px; }
-  .matrix-dot         { width: 18px; height: 18px; } /* bigger touch target */
-  .matrix-popup-card  { margin: 0 12px 12px; }
-  .matrix-axis-labels { padding: 10px 12px 5px; font-size: 0.6rem; }
+  .matrix-dot-label      { display: none; }
+  .matrix-track          { height: 56px; margin: 10px 12px 8px; }
+  .matrix-dot            { width: 22px; height: 22px; } /* bigger touch target */
+  .matrix-dot-number     { font-size: 9px; }
+  .matrix-popup-card     { margin: 0 12px 12px; }
+  .matrix-axis-inside-label { font-size: 0.55rem; bottom: 0; }
 }
 
 /* ── Party description cards ── */
@@ -1025,6 +1049,32 @@ body {
   color: var(--text-secondary);
   line-height: 1.5;
   padding: 8px 10px;
+}
+
+.party-desc-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+/* ── Projections notice ── */
+.projections-notice {
+  background: #fffbea;
+  border: 1px solid #e8c84a;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-size: 0.76rem;
+  color: #6b4f00;
+  line-height: 1.5;
+  margin: 0 0 14px;
 }
 
 /* ── Race detail modal layout ── */

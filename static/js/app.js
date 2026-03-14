@@ -94,9 +94,14 @@ function openPartyModal() {
 
   const sorted = Object.entries(PARTY_POSITION).sort((a, b) => a[1] - b[1]);
 
+  // Build a number map (party key → 1-based index) for use in description cards
+  const partyNumber = {};
+  sorted.forEach(([key], i) => { partyNumber[key] = i + 1; });
+
   sorted.forEach(([key, pos], i) => {
     const info = parties[key];
     if (!info) return;
+    const num = i + 1;
 
     const dot = document.createElement("div");
     dot.className = "matrix-dot";
@@ -104,7 +109,13 @@ function openPartyModal() {
     dot.style.background = info.color;
     dot.setAttribute("data-party", key);
 
-    // Stagger labels: even index → above the dot, odd → below
+    // Number inside the dot (visible on all sizes, essential on mobile)
+    const numSpan = document.createElement("span");
+    numSpan.className = "matrix-dot-number";
+    numSpan.textContent = String(num);
+    dot.appendChild(numSpan);
+
+    // Stagger text labels: even index → above the dot, odd → below
     const above = i % 2 === 0;
     const label = document.createElement("span");
     label.className = "matrix-dot-label " + (above ? "label-above" : "label-below");
@@ -135,6 +146,7 @@ function openPartyModal() {
 
       card.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;border-left:4px solid ${info.color};padding-left:10px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:${info.color};color:#fff;font-weight:900;font-size:0.7rem;flex-shrink:0">${num}</span>
           <span style="color:${info.color};font-weight:900;font-size:1rem">${info.short}</span>
           <span style="font-weight:700">${info.name}</span>
         </div>
@@ -147,6 +159,17 @@ function openPartyModal() {
 
     track.appendChild(dot);
   });
+
+  // Axis labels anchored inside the track at bottom corners
+  const axisLeft = document.createElement("span");
+  axisLeft.className = "matrix-axis-inside-label axis-left-inside";
+  axisLeft.textContent = "← Hard Left";
+  track.appendChild(axisLeft);
+
+  const axisRight = document.createElement("span");
+  axisRight.className = "matrix-axis-inside-label axis-right-inside";
+  axisRight.textContent = "Hard Right →";
+  track.appendChild(axisRight);
 
   // Build description cards
   descs.innerHTML = "";
@@ -161,10 +184,12 @@ function openPartyModal() {
   });
 
   sortedParties.forEach(([key, info]) => {
+    const num = partyNumber[key] || "";
     const card = document.createElement("div");
     card.className = "party-desc-card";
     card.innerHTML = `
       <div class="party-desc-header" style="border-left:4px solid ${info.color}">
+        ${num ? `<span class="party-desc-num" style="background:${info.color}">${num}</span>` : ""}
         <span class="party-desc-short" style="color:${info.color}">${info.short}</span>
         <span class="party-desc-name">${info.name}</span>
         <span class="party-desc-pos">${info.position}</span>
@@ -457,7 +482,7 @@ function loadDeptLayer() {
     .catch(err => console.error("GeoJSON load failed:", err));
 }
 
-// ── Mayor star markers ────────────────────────────────────────
+// ── Mayor race dot markers ────────────────────────────────────
 function buildMayoralMarkers() {
   majorCityMarkers.forEach(m => map.removeLayer(m));
   majorCityMarkers = [];
@@ -467,14 +492,14 @@ function buildMayoralMarkers() {
     const [lng, lat] = race.coordinates;
     const incColor   = PARTY_COLORS[race.incumbent.party] || "#999";
     const icon = L.divIcon({
-      html: `<div class="mayor-star-icon" style="color:${incColor}">★</div>`,
-      className: "", iconSize: [24, 24], iconAnchor: [12, 12],
+      html: `<div class="mayor-dot-icon" style="background:${incColor}"></div>`,
+      className: "", iconSize: [18, 18], iconAnchor: [9, 9],
     });
     const marker = L.marker([lat, lng], { icon })
       .addTo(map)
       .on("mouseover", e => {
         const leader = race.polls?.round1?.reduce((a, b) => a.pct > b.pct ? a : b);
-        showTooltip(e, `<strong>★ ${race.name} Mayoral Race</strong><br>
+        showTooltip(e, `<strong>${race.name} — Mayoral Race</strong><br>
           Outgoing: ${race.incumbent.name} (${race.incumbent.party})<br>
           ${leader ? `Leading: <strong>${leader.candidate || leader.party}</strong> ${leader.pct}%` : ""}`);
       })
@@ -497,10 +522,10 @@ function buildLegend() {
     item.innerHTML = `<div class="legend-swatch" style="background:${info.color}"></div><span>${info.short}</span>`;
     container.appendChild(item);
   });
-  const starItem = document.createElement("div");
-  starItem.className = "legend-item";
-  starItem.innerHTML = `<span style="font-size:1rem;line-height:1">★</span><span>Mayor race</span>`;
-  container.appendChild(starItem);
+  const dotItem = document.createElement("div");
+  dotItem.className = "legend-item";
+  dotItem.innerHTML = `<div style="width:14px;height:14px;border-radius:50%;background:#555;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);flex-shrink:0"></div><span>Mayor race</span>`;
+  container.appendChild(dotItem);
 }
 
 // ── Race cards grid ───────────────────────────────────────────
@@ -544,7 +569,7 @@ function buildRacesGrid() {
     card.className = "race-card";
     card.innerHTML = `
       <div class="race-card-header" style="background:${incColor}20;border-bottom:2px solid ${incColor}">
-        <span class="race-card-city">★ ${race.name}</span>
+        <span class="race-card-city">${race.name}</span>
         <span class="race-card-incumbent" style="background:${incColor}">${incShort}</span>
       </div>
       <div class="race-card-body">
@@ -647,7 +672,7 @@ function buildNewsCard(item, idx) {
             : `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>`}
         </div>
         ${item.published ? `<div class="news-card-date">${item.published}</div>` : ""}
-        ${summaryHtml}
+        ${isPlaybook && summaryHtml ? `<div class="playbook-summary-label">Summary</div>${summaryHtml}` : summaryHtml}
         ${paywallNote ? `<p class="paywall-note">ℹ ${paywallNote}</p>` : ""}
         ${hasFullText ? `
           <button class="playbook-expand-btn" data-idx="${idx}">Read full newsletter ▾</button>
@@ -682,13 +707,6 @@ function loadNews() {
 // ── Controls ──────────────────────────────────────────────────
 document.getElementById("btn-overview").addEventListener("click", () => {
   map.flyTo([46.5, 2.3], 6, { duration: 1 });
-  document.getElementById("btn-overview").classList.add("active");
-  document.getElementById("btn-zoom-major").classList.remove("active");
-});
-document.getElementById("btn-zoom-major").addEventListener("click", () => {
-  map.flyTo([46.5, 3.0], 6.2, { duration: 1 });
-  document.getElementById("btn-zoom-major").classList.add("active");
-  document.getElementById("btn-overview").classList.remove("active");
 });
 document.getElementById("toggle-mayoral").addEventListener("change", e => {
   highlightMayoral = e.target.checked;

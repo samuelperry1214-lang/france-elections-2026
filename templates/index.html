@@ -39,7 +39,6 @@
         <h2 class="section-title">Results by Constituency</h2>
         <div class="map-controls">
           <button id="btn-overview" class="map-btn active">Overview</button>
-          <button id="btn-zoom-major" class="map-btn">Major Cities</button>
           <label class="toggle-label">
             <input type="checkbox" id="toggle-mayoral" checked />
             Highlight Mayoral Races
@@ -63,16 +62,18 @@
       </div>
     </section>
 
+    <!-- PROJECTIONS NOTICE -->
+    <div class="projections-notice" id="projections-notice">
+      All figures shown on the map and race cards are <strong>pre-election polling projections</strong>, not results.
+      This page will update automatically with live data from data.gouv.fr once polls close on 15 March 2026.
+    </div>
+
     <!-- PARTY GUIDE MODAL -->
     <div id="party-modal-overlay" class="modal-overlay hidden">
       <div class="modal-box">
         <div class="modal-header">
           <h2 class="modal-title">Party Guide &amp; Political Matrix</h2>
           <button class="modal-close" id="party-modal-close">&times;</button>
-        </div>
-        <div class="matrix-axis-labels">
-          <span class="axis-left">← Hard Left</span>
-          <span class="axis-right">Hard Right →</span>
         </div>
         <div class="matrix-track" id="party-matrix-track"></div>
         <div id="party-descriptions" class="party-descriptions"></div>

@@ -165,6 +165,16 @@ def _clean(html_text: str, max_chars: int = 600) -> str:
     return text[:max_chars]
 
 
+def _extract_summary(text: str, max_words: int = 250) -> str:
+    """Extract approximately max_words words from the start of a text body."""
+    if not text:
+        return ""
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    return " ".join(words[:max_words]) + "…"
+
+
 def _tr(text: str, lang: str) -> str:
     """Translate if French, else return as-is."""
     if lang != "fr" or not text:
@@ -361,8 +371,8 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
         title_en    = translate_to_english(edition["title"]) if edition["title"] else "(Untitled)"
         # Translate full text in one call (up to 4000 chars)
         full_en     = translate_to_english(edition["full_text"]) if edition["full_text"] else ""
-        # Summary = first 400 chars of translated full text
-        summary_en  = full_en[:400] + ("…" if len(full_en) > 400 else "")
+        # Summary = extractive ~250 words from start of translated full text
+        summary_en  = _extract_summary(full_en, 250)
 
         items.append({
             "source":         "Paris Playbook",
