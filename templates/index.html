@@ -127,6 +127,37 @@
 
   <div id="map-tooltip" class="map-tooltip hidden"></div>
 
+  <!-- Credits pop-out tab -->
+  <div id="credits-tab" title="View API usage">AI</div>
+  <div id="credits-panel" class="hidden">
+    <div class="credits-panel-header">
+      <span>API Credits</span>
+      <button id="credits-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="credits-row">
+      <span>Used</span>
+      <span id="credits-used">—</span>
+    </div>
+    <div class="credits-row">
+      <span>Budget</span>
+      <span>£2.50</span>
+    </div>
+    <div class="credits-row">
+      <span>Remaining</span>
+      <span id="credits-remaining">—</span>
+    </div>
+    <div class="credits-bar-wrap">
+      <div id="credits-bar" class="credits-bar"></div>
+    </div>
+    <div class="credits-row" style="margin-top:6px">
+      <span>AI summaries</span>
+      <span id="credits-calls">—</span>
+    </div>
+    <p id="credits-limit-note" class="credits-limit-note hidden">
+      Budget reached — summaries using fallback mode.
+    </p>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>

@@ -885,6 +885,45 @@ function startResultsPolling() {
   setInterval(poll, 300000);
 }
 
+// ── Credits tab ───────────────────────────────────────────────
+(function () {
+  const tab    = document.getElementById("credits-tab");
+  const panel  = document.getElementById("credits-panel");
+  const closeBtn = document.getElementById("credits-close");
+
+  function openPanel() {
+    panel.classList.remove("hidden");
+    loadUsage();
+  }
+  function closePanel() { panel.classList.add("hidden"); }
+
+  tab.addEventListener("click", () => {
+    panel.classList.contains("hidden") ? openPanel() : closePanel();
+  });
+  closeBtn.addEventListener("click", closePanel);
+
+  function loadUsage() {
+    fetch("/api/usage")
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById("credits-used").textContent =
+          `£${d.cost_gbp.toFixed(4)}`;
+        document.getElementById("credits-remaining").textContent =
+          `£${d.remaining_gbp.toFixed(4)}`;
+        document.getElementById("credits-calls").textContent = d.calls;
+        const bar = document.getElementById("credits-bar");
+        bar.style.width = d.pct_used + "%";
+        bar.style.background = d.pct_used > 85 ? "#e74c3c"
+                             : d.pct_used > 60 ? "#f39c12"
+                             : "#27ae60";
+        const note = document.getElementById("credits-limit-note");
+        if (d.budget_exceeded) note.classList.remove("hidden");
+        else note.classList.add("hidden");
+      })
+      .catch(() => {});
+  }
+})();
+
 // ── Boot ──────────────────────────────────────────────────────
 async function init() {
   const resp = await fetch("/api/candidates");

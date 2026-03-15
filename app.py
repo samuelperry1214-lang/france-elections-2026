@@ -116,5 +116,11 @@ def get_status():
     return jsonify(election_status())
 
 
+@app.route("/api/usage")
+def get_usage():
+    from scrapers.usage import get_usage
+    return jsonify(get_usage())
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

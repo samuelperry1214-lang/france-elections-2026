@@ -321,6 +321,10 @@ def _themed_extractive(translated_text: str) -> str:
 def _ai_summarise_playbook(translated_text: str, api_key: str,
                             max_words: int = 500) -> str:
     """Call Claude Haiku for proper themed abstractive summarisation."""
+    from scrapers.usage import budget_ok, record_call
+    if not budget_ok():
+        print("[playbook] AI summary skipped — £2.50 budget reached")
+        return ""
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
@@ -345,6 +349,7 @@ def _ai_summarise_playbook(translated_text: str, api_key: str,
             max_tokens=800,
             messages=[{"role": "user", "content": prompt}],
         )
+        record_call(msg.usage.input_tokens, msg.usage.output_tokens)
         return msg.content[0].text.strip()
     except Exception as e:
         print(f"[playbook] AI summary failed: {e}")
