@@ -231,52 +231,83 @@ _ALLCAPS_OPENER_RE = re.compile(
 )
 
 
-def _parse_playbook_bullets(translated_text: str, max_words: int = 300) -> str:
+def _parse_playbook_bullets(translated_text: str, max_words: int = 500) -> str:
     """
-    Convert translated Playbook body (post-separator, pre-footer) to bullet points.
+    Summarise the full translated Playbook body as clean bullet points.
 
-    Paragraphs that open with an ALL-CAPS keyword become:
-        • **Macron In Lebanon**: First two sentences of content…
-    Plain paragraphs become:
-        • First two sentences…
+    Strategy:
+    - Strip ALL-CAPS taglines (stylistic openers like "DANS LA NUIT," or
+      "TEST N°1.") — the news is in the sentence that follows, not the tag.
+    - Distribute the word budget evenly across ALL paragraphs so the whole
+      newsletter is represented, not just the opening section.
+    - No bold labels — just plain bullets: "• France's first death in Lebanon…"
 
-    Total output is clipped to ≈ max_words.
+    If ANTHROPIC_API_KEY is set, delegates to Claude for a proper AI summary.
     """
+    import os
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if api_key:
+        return _ai_summarise_playbook(translated_text, api_key, max_words)
+
+    # ── Extractive fallback ───────────────────────────────────────────────────
+    paras = [p.strip() for p in translated_text.split("\n")
+             if p.strip() and len(p.strip()) > 40]
+    if not paras:
+        return ""
+
+    # Allocate a roughly equal word budget per paragraph
+    words_per_bullet = max(15, min(50, max_words // max(len(paras), 1)))
+
     bullets: list[str] = []
-    total_words = 0
-
-    for raw_line in translated_text.split("\n"):
-        para = raw_line.strip()
-        if not para or len(para) < 40:
-            continue
-
+    for para in paras:
+        # Strip ALL-CAPS opener — take only the body that follows
         m = _ALLCAPS_OPENER_RE.match(para)
         if m and m.group(1).strip().isupper():
-            header = m.group(1).strip().rstrip(",. ").title()
-            body   = m.group(2).strip()
+            body = m.group(2).strip()
         else:
-            header = None
-            body   = para
+            body = para
 
+        # First substantive sentence (skip very short opener fragments)
         sentences = re.split(r'(?<=[.!?])\s+', body)
-        snippet   = " ".join(sentences[:2]).strip()
-        words     = snippet.split()
+        key = next((s for s in sentences if len(s.split()) >= 6),
+                   sentences[0] if sentences else "")
 
-        remaining = max_words - total_words
-        if remaining <= 10:
-            break
-        if len(words) > remaining:
-            snippet = " ".join(words[:remaining]) + "…"
-            words   = words[:remaining]
+        if not key or len(key.split()) < 5:
+            continue
 
-        bullet = f"• **{header}**: {snippet}" if header else f"• {snippet}"
-        bullets.append(bullet)
-        total_words += len(words)
+        words = key.split()
+        if len(words) > words_per_bullet:
+            key = " ".join(words[:words_per_bullet]) + "…"
 
-        if total_words >= max_words:
-            break
+        bullets.append(f"• {key}")
 
     return "\n".join(bullets)
+
+
+def _ai_summarise_playbook(translated_text: str, api_key: str,
+                            max_words: int = 500) -> str:
+    """Call Claude Haiku to produce a proper abstractive summary."""
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+        prompt = (
+            f"Below is the full text of today's Paris Playbook newsletter by Politico, "
+            f"already translated into English. Summarise it as {max_words // 50}–10 "
+            f"bullet points (plain text, no bold, no markdown headers) that capture "
+            f"the key political news items. Each bullet should state the core fact "
+            f"directly — do not start with vague labels. Use at most {max_words} words "
+            f"total. Format: one bullet per line, each starting with '• '.\n\n"
+            f"{translated_text[:6000]}"
+        )
+        msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=700,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return msg.content[0].text.strip()
+    except Exception as e:
+        print(f"[playbook] AI summary failed: {e} — falling back to extractive")
+        return ""   # caller will use extractive fallback
 
 
 def _tr(text: str, lang: str) -> str:
