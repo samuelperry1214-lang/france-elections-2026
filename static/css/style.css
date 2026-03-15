@@ -1280,6 +1280,43 @@ body {
   color: var(--text-primary);
 }
 
+.playbook-theme-header {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #2980b9;
+  margin: 10px 0 4px;
+}
+.playbook-theme-header:first-child { margin-top: 4px; }
+
+.playbook-theme-tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: #e8f0fa;
+  color: #2980b9;
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+.playbook-ai-prompt {
+  margin-top: 10px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: var(--surface-alt);
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+.playbook-ai-prompt code {
+  font-family: monospace;
+  background: #e0e0e0;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
 /* ── Live results tracker ──────────────────────────────────────────────────── */
 .results-tracker {
   font-size: 0.8rem;

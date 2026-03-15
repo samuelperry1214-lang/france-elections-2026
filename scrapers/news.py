@@ -249,65 +249,106 @@ def _parse_playbook_bullets(translated_text: str, max_words: int = 500) -> str:
     if api_key:
         return _ai_summarise_playbook(translated_text, api_key, max_words)
 
-    # ── Extractive fallback ───────────────────────────────────────────────────
-    paras = [p.strip() for p in translated_text.split("\n")
-             if p.strip() and len(p.strip()) > 40]
-    if not paras:
-        return ""
+    # ── Extractive themed fallback ────────────────────────────────────────────
+    # Groups paragraphs by political theme, picks best sentence per group.
+    # Much better than sequential extraction but not as good as AI.
+    return _themed_extractive(translated_text) + (
+        "\n\n__AI_KEY_MISSING__"  # flag picked up by scrape_paris_playbook
+    )
 
-    # Allocate a roughly equal word budget per paragraph
-    words_per_bullet = max(15, min(50, max_words // max(len(paras), 1)))
+
+# Theme keyword sets (checked against translated English text)
+_THEMES: list[tuple[str, list[str]]] = [
+    ("Macron & government",
+     ["macron", "renaissance", "gabriel attal", "premier ministre", "prime minister",
+      "élysée", "elysee", "government", "gouvernement", "horizons", "edouard philippe"]),
+    ("RN & far right",
+     ["rassemblement national", "rn ", "marine le pen", "allisio", "bardella",
+      "reconquete", "reconquête", "zemmour", "far right", "extreme right"]),
+    ("Left & NFP",
+     ["socialiste", "socialist", "parti socialiste", "lfi", "insoumis", "mélenchon",
+      "melenchon", "nfp", "front populaire", "eelv", "écologiste", "ecologiste",
+      "greens", "ruffin", "glucksmann"]),
+    ("Municipal elections",
+     ["municipal", "municipale", "mairie", "mayor", "maire", "premier tour",
+      "round 1", "first round", "second tour", "runoff", "liste", "candidat"]),
+    ("International / defence",
+     ["liban", "lebanon", "ukraine", "zelensky", "moyen-orient", "middle east",
+      "israel", "iran", "nato", "otan", "défense", "defense", "guerre", "war"]),
+]
+
+
+def _themed_extractive(translated_text: str) -> str:
+    """Group paragraphs by political theme and extract one sentence per theme."""
+    paras = [p.strip() for p in translated_text.split("\n")
+             if p.strip() and len(p.strip()) > 50]
+
+    # Bucket paragraphs into themes
+    buckets: dict[str, list[str]] = {t[0]: [] for t in _THEMES}
+    buckets["Other"] = []
+
+    for para in paras:
+        low = para.lower()
+        matched = False
+        for theme_name, keywords in _THEMES:
+            if any(kw in low for kw in keywords):
+                buckets[theme_name].append(para)
+                matched = True
+                break
+        if not matched:
+            buckets["Other"].append(para)
 
     bullets: list[str] = []
-    for para in paras:
-        # Strip ALL-CAPS opener — take only the body that follows
-        m = _ALLCAPS_OPENER_RE.match(para)
-        if m and m.group(1).strip().isupper():
-            body = m.group(2).strip()
-        else:
-            body = para
-
-        # First substantive sentence (skip very short opener fragments)
-        sentences = re.split(r'(?<=[.!?])\s+', body)
-        key = next((s for s in sentences if len(s.split()) >= 6),
-                   sentences[0] if sentences else "")
-
-        if not key or len(key.split()) < 5:
+    for theme_name, _ in _THEMES:
+        group = buckets[theme_name]
+        if not group:
             continue
+        # Merge all matching paragraphs, strip taglines, take first 2 sentences
+        combined = " ".join(group)
+        m = _ALLCAPS_OPENER_RE.match(combined)
+        body = m.group(2).strip() if (m and m.group(1).strip().isupper()) else combined
+        sentences = re.split(r'(?<=[.!?])\s+', body)
+        snippet = " ".join(sentences[:2]).strip()
+        words = snippet.split()
+        if len(words) > 55:
+            snippet = " ".join(words[:55]) + "…"
+        if snippet:
+            bullets.append(f"[{theme_name}] {snippet}")
 
-        words = key.split()
-        if len(words) > words_per_bullet:
-            key = " ".join(words[:words_per_bullet]) + "…"
-
-        bullets.append(f"• {key}")
-
-    return "\n".join(bullets)
+    return "\n".join(bullets) if bullets else ""
 
 
 def _ai_summarise_playbook(translated_text: str, api_key: str,
                             max_words: int = 500) -> str:
-    """Call Claude Haiku to produce a proper abstractive summary."""
+    """Call Claude Haiku for proper themed abstractive summarisation."""
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
         prompt = (
-            f"Below is the full text of today's Paris Playbook newsletter by Politico, "
-            f"already translated into English. Summarise it as {max_words // 50}–10 "
-            f"bullet points (plain text, no bold, no markdown headers) that capture "
-            f"the key political news items. Each bullet should state the core fact "
-            f"directly — do not start with vague labels. Use at most {max_words} words "
-            f"total. Format: one bullet per line, each starting with '• '.\n\n"
-            f"{translated_text[:6000]}"
+            "You are summarising today's Paris Playbook newsletter (by Politico) "
+            "for an English-speaking audience following French politics.\n\n"
+            "The full translated text is below. Read ALL of it, then write a "
+            "summary grouped by political theme — for example: Macron & government, "
+            "RN & far right, The left, Municipal elections, International news. "
+            "Only include themes that actually appear in today's newsletter.\n\n"
+            "Rules:\n"
+            "- Use natural, fluent English sentences — not fragments or translations\n"
+            "- Each theme gets 1–3 bullets that synthesise the key developments\n"
+            "- Start each theme with a plain header line like 'Macron & government'\n"
+            "- Each bullet starts with '• '\n"
+            "- No bold, no markdown, no brackets\n"
+            f"- Total length: no more than {max_words} words\n\n"
+            f"Newsletter text:\n{translated_text[:8000]}"
         )
         msg = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=700,
+            max_tokens=800,
             messages=[{"role": "user", "content": prompt}],
         )
         return msg.content[0].text.strip()
     except Exception as e:
-        print(f"[playbook] AI summary failed: {e} — falling back to extractive")
-        return ""   # caller will use extractive fallback
+        print(f"[playbook] AI summary failed: {e}")
+        return ""
 
 
 def _tr(text: str, lang: str) -> str:
@@ -516,11 +557,12 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
             continue
 
         title_en    = translate_to_english(edition["title"]) if edition["title"] else "(Untitled)"
-        # Translate full text in one call (up to 4000 chars)
+        # Translate the full cleaned body (post-separator, pre-footer)
         full_en     = translate_to_english(edition["full_text"]) if edition["full_text"] else ""
-        # Bullet summary: parse ALL-CAPS sections → "• **Header**: snippet…"
-        summary_en  = _parse_playbook_bullets(full_en) if full_en else ""
-        # Fallback to plain extract if bullet parser found nothing
+        # Themed summary — AI if key present, themed-extractive otherwise
+        raw_summary = _parse_playbook_bullets(full_en) if full_en else ""
+        ai_key_missing = raw_summary.endswith("__AI_KEY_MISSING__")
+        summary_en = raw_summary.replace("\n\n__AI_KEY_MISSING__", "").strip()
         if not summary_en:
             summary_en = _extract_summary(full_en, 250)
 
@@ -537,6 +579,7 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
             "city":           "national",
             "paywall_note":   "",
             "is_playbook":    True,
+            "ai_key_missing": ai_key_missing,
         })
 
     if not items:

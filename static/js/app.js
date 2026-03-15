@@ -758,21 +758,48 @@ function buildNewsCard(item, idx) {
   const translated  = item.title_original && item.title_original !== item.title;
   const paywallNote = item.paywall_note || "";
 
-  // Format summary: Playbook bullets use "• **Header**: text", others use paragraphs
+  // Format summary
   const summaryHtml = item.summary
     ? (() => {
-        const lines = item.summary.split("\n").filter(Boolean);
-        if (isPlaybook) {
-          // Render each "• **Header**: body" bullet as a styled list item
-          return `<ul class="playbook-bullets">${lines.map(line => {
-            // Convert markdown bold "**Header**" → <strong>
-            const rendered = line
-              .replace(/^•\s*/, "")
-              .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-            return `<li>${rendered}</li>`;
-          }).join("")}</ul>`;
+        if (!isPlaybook) {
+          return item.summary.split("\n").filter(Boolean).slice(0, 3)
+            .map(p => `<p class="news-card-summary">${p}</p>`).join("");
         }
-        return lines.slice(0, 3).map(p => `<p class="news-card-summary">${p}</p>`).join("");
+        // Playbook: render themed sections.
+        // AI output:  theme header line + "• bullet" lines
+        // Extractive: "[Theme] sentence" lines
+        const lines = item.summary.split("\n").filter(Boolean);
+        const isAI  = !item.ai_key_missing;
+        let html = "";
+        if (isAI) {
+          // AI output: plain header lines (no "• ") start a new section
+          for (const line of lines) {
+            if (line.startsWith("• ")) {
+              html += `<li>${line.slice(2)}</li>`;
+            } else {
+              // Close any open list, then render as a theme header
+              html = html ? html + `</ul>` : html;
+              html += `<p class="playbook-theme-header">${line}</p><ul class="playbook-bullets">`;
+            }
+          }
+          if (html.includes("<ul")) html += "</ul>";
+        } else {
+          // Extractive fallback: "[Theme] sentence"
+          html = `<ul class="playbook-bullets">`;
+          for (const line of lines) {
+            const m = line.match(/^\[(.+?)\]\s*(.*)/);
+            if (m) {
+              html += `<li><span class="playbook-theme-tag">${m[1]}</span> ${m[2]}</li>`;
+            } else if (line.startsWith("• ")) {
+              html += `<li>${line.slice(2)}</li>`;
+            }
+          }
+          html += `</ul>`;
+          html += `<p class="playbook-ai-prompt">
+            For full themed AI summaries, add <code>ANTHROPIC_API_KEY</code> to your <code>.env</code>
+          </p>`;
+        }
+        return html;
       })()
     : "";
 
