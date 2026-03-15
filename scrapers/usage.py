@@ -20,9 +20,12 @@ GBP_BUDGET   = 2.50
 USD_PER_GBP  = 1.27          # fixed conversion rate
 USD_BUDGET   = GBP_BUDGET * USD_PER_GBP   # ≈ $3.175
 
-_USAGE_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "data", "api_usage.json"
-)
+# On Vercel (and other read-only serverless platforms) the project directory
+# is not writable.  Use /tmp which is always writable; fall back to the
+# local data/ path for development.
+_LOCAL_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "api_usage.json")
+_USAGE_PATH = "/tmp/api_usage.json" if os.environ.get("VERCEL") else _LOCAL_PATH
+
 _lock = threading.Lock()
 
 
@@ -79,6 +82,9 @@ def record_call(input_tokens: int, output_tokens: int) -> None:
         data["total_cost_usd"]      += cost
         data["calls"]               += 1
         data["last_call"]            = datetime.now().isoformat(timespec="seconds")
-        _write(data)
+        try:
+            _write(data)
+        except Exception as e:
+            print(f"[usage] write failed (read-only fs?): {e}")
     print(f"[usage] call recorded: {input_tokens}in/{output_tokens}out "
           f"≈ ${cost:.4f}  |  total: ${data['total_cost_usd']:.4f}")
