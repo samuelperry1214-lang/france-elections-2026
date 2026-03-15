@@ -231,7 +231,7 @@ _ALLCAPS_OPENER_RE = re.compile(
 )
 
 
-def _parse_playbook_bullets(translated_text: str, max_words: int = 500) -> str:
+def _parse_playbook_bullets(translated_text: str, max_words: int = 700) -> str:
     """
     Summarise the full translated Playbook body as clean bullet points.
 
@@ -318,9 +318,12 @@ def _themed_extractive(translated_text: str) -> str:
     return "\n".join(bullets) if bullets else ""
 
 
-def _ai_summarise_playbook(translated_text: str, api_key: str,
-                            max_words: int = 500) -> str:
-    """Call Claude Haiku for proper themed abstractive summarisation."""
+def _ai_summarise_playbook(newsletter_text: str, api_key: str,
+                            max_words: int = 700) -> str:
+    """Call Claude Haiku for proper themed abstractive summarisation.
+
+    newsletter_text is the DeepL-translated English body of the Playbook.
+    """
     from scrapers.usage import budget_ok, record_call
     if not budget_ok():
         print("[playbook] AI summary skipped — £2.50 budget reached")
@@ -335,26 +338,30 @@ def _ai_summarise_playbook(translated_text: str, api_key: str,
             "STRICT FORMAT RULES — follow exactly:\n"
             "1. Each theme is a plain text header on its own line, e.g.  Municipal elections\n"
             "2. Each bullet starts with exactly '• ' (bullet space), one per line\n"
-            "3. Write in fluent, natural English — synthesise, do not translate\n"
+            "3. Write 2–4 bullets per theme with enough detail to stand alone\n"
             "4. Every sentence must make sense on its own without context\n"
             "5. Use NO markdown: no **, no *, no #, no >, no backticks\n"
             "6. Only include themes that have real content in today's newsletter\n"
-            f"7. Total output: 300–{max_words} words\n\n"
+            f"7. Total output: 400–{max_words} words\n\n"
             "EXAMPLE OF CORRECT OUTPUT (do not copy — write fresh for today's content):\n"
             "Municipal elections\n"
             "• Round 1 voting begins Sunday morning across France's 35,000 communes, "
             "with results expected by 8pm.\n"
             "• Paris is the most-watched race: Gregoire leads but Dati is within "
-            "striking distance and five candidates could qualify for the runoff.\n\n"
+            "striking distance and five candidates could qualify for the runoff.\n"
+            "• Marseille is the RN's flagship target: Allisio has closed the gap to "
+            "within three points of incumbent Payan since January.\n\n"
             "RN & far right\n"
-            "• The party is targeting Marseille as its prize of the night, with "
-            "Allisio polling within three points of incumbent Payan.\n\n"
+            "• The party is cautiously optimistic after being burned in 2021, when "
+            "strong first-round showings failed to translate into wins.\n"
+            "• Marine Le Pen's party is counting on a high abstention rate among "
+            "left-wing voters to boost its chances in runoff contests.\n\n"
             "END OF EXAMPLE\n\n"
-            f"Newsletter text to summarise:\n{translated_text[:8000]}"
+            f"Newsletter text to summarise:\n{newsletter_text[:12000]}"
         )
         msg = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=800,
+            max_tokens=1100,
             messages=[{"role": "user", "content": prompt}],
         )
         record_call(msg.usage.input_tokens, msg.usage.output_tokens)
@@ -660,9 +667,10 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
             continue
 
         title_en    = translate_to_english(edition["title"]) if edition["title"] else "(Untitled)"
-        # Translate the full cleaned body (post-separator, pre-footer)
+        # DeepL translates the full body (no char cap); Google Translate fallback
+        # is capped at 4500 chars but only fires if DeepL is unavailable.
         full_en     = translate_to_english(edition["full_text"]) if edition["full_text"] else ""
-        # Themed summary — AI if key present, themed-extractive otherwise
+        # Claude summarises the translated English text
         raw_summary = _parse_playbook_bullets(full_en) if full_en else ""
         ai_key_missing = raw_summary.endswith("__AI_KEY_MISSING__")
         summary_en = raw_summary.replace("\n\n__AI_KEY_MISSING__", "").strip()
