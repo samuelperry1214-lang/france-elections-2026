@@ -116,6 +116,17 @@ def get_status():
     return jsonify(election_status())
 
 
+@app.route("/api/news/digest")
+def get_news_digest():
+    # Use cached news; regenerate digest if news has refreshed
+    from scrapers.news import build_news_digest
+    items = _cache["news"]["data"]
+    if not items:
+        return jsonify({"digest": ""})
+    digest = build_news_digest(items)
+    return jsonify({"digest": digest})
+
+
 @app.route("/api/usage")
 def get_usage():
     from scrapers.usage import get_usage

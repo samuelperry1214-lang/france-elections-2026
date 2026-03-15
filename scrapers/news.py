@@ -329,20 +329,28 @@ def _ai_summarise_playbook(translated_text: str, api_key: str,
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
         prompt = (
-            "You are summarising today's Paris Playbook newsletter (by Politico) "
-            "for an English-speaking audience following French politics.\n\n"
-            "The full translated text is below. Read ALL of it, then write a "
-            "summary grouped by political theme — for example: Macron & government, "
-            "RN & far right, The left, Municipal elections, International news. "
-            "Only include themes that actually appear in today's newsletter.\n\n"
-            "Rules:\n"
-            "- Use natural, fluent English sentences — not fragments or translations\n"
-            "- Each theme gets 1–3 bullets that synthesise the key developments\n"
-            "- Start each theme with a plain header line like 'Macron & government'\n"
-            "- Each bullet starts with '• '\n"
-            "- No bold, no markdown, no brackets\n"
-            f"- Total length: no more than {max_words} words\n\n"
-            f"Newsletter text:\n{translated_text[:8000]}"
+            "You are summarising today's Paris Playbook newsletter (Politico) "
+            "for an English-speaking reader who follows French politics.\n\n"
+            "Read the FULL text below. Then write a themed summary.\n\n"
+            "STRICT FORMAT RULES — follow exactly:\n"
+            "1. Each theme is a plain text header on its own line, e.g.  Municipal elections\n"
+            "2. Each bullet starts with exactly '• ' (bullet space), one per line\n"
+            "3. Write in fluent, natural English — synthesise, do not translate\n"
+            "4. Every sentence must make sense on its own without context\n"
+            "5. Use NO markdown: no **, no *, no #, no >, no backticks\n"
+            "6. Only include themes that have real content in today's newsletter\n"
+            f"7. Total output: 300–{max_words} words\n\n"
+            "EXAMPLE OF CORRECT OUTPUT (do not copy — write fresh for today's content):\n"
+            "Municipal elections\n"
+            "• Round 1 voting begins Sunday morning across France's 35,000 communes, "
+            "with results expected by 8pm.\n"
+            "• Paris is the most-watched race: Gregoire leads but Dati is within "
+            "striking distance and five candidates could qualify for the runoff.\n\n"
+            "RN & far right\n"
+            "• The party is targeting Marseille as its prize of the night, with "
+            "Allisio polling within three points of incumbent Payan.\n\n"
+            "END OF EXAMPLE\n\n"
+            f"Newsletter text to summarise:\n{translated_text[:8000]}"
         )
         msg = client.messages.create(
             model="claude-haiku-4-5-20251001",
@@ -354,6 +362,96 @@ def _ai_summarise_playbook(translated_text: str, api_key: str,
     except Exception as e:
         print(f"[playbook] AI summary failed: {e}")
         return ""
+
+
+def build_news_digest(news_items: list) -> str:
+    """
+    Use Claude Haiku to group news headlines by theme and synthesise each group.
+    Falls back to keyword grouping if no API key or budget exceeded.
+
+    Returns a formatted string:
+        Theme name
+        • Synthesis sentence (Source1, Source2)
+    """
+    import os
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+
+    # Build a compact list of headlines + summaries for the prompt
+    lines = []
+    for item in news_items:
+        if item.get("is_playbook"):
+            continue
+        src   = item.get("source", "")
+        title = item.get("title", "").strip()
+        summ  = (item.get("summary") or "").strip()[:120]
+        if title:
+            lines.append(f"[{src}] {title}. {summ}")
+    if not lines:
+        return ""
+
+    blob = "\n".join(lines[:60])   # cap at 60 articles
+
+    if api_key:
+        from scrapers.usage import budget_ok, record_call
+        if budget_ok():
+            try:
+                import anthropic
+                client = anthropic.Anthropic(api_key=api_key)
+                prompt = (
+                    "Below are election news headlines and summaries from multiple sources, "
+                    "each prefixed with [Source]. Group them by theme and write a short "
+                    "synthesis for each theme.\n\n"
+                    "STRICT FORMAT RULES:\n"
+                    "1. Theme header on its own line, e.g.  Paris mayoral race\n"
+                    "2. Each point starts with '• ' followed by 1–2 fluent English sentences\n"
+                    "3. End each point with the relevant sources in brackets, e.g.  "
+                    "(Le Monde, Le Figaro)\n"
+                    "4. No markdown: no **, no *, no #\n"
+                    "5. Only include themes with at least one article\n"
+                    "6. Total: 200–400 words\n\n"
+                    "EXAMPLE:\n"
+                    "Marseille\n"
+                    "• RN candidate Allisio is within three points of incumbent Payan "
+                    "as polls close, making Marseille the night's most-watched contest. "
+                    "(La Provence, Le Figaro)\n\n"
+                    "END EXAMPLE\n\n"
+                    f"Headlines:\n{blob}"
+                )
+                msg = client.messages.create(
+                    model="claude-haiku-4-5-20251001",
+                    max_tokens=600,
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                record_call(msg.usage.input_tokens, msg.usage.output_tokens)
+                return msg.content[0].text.strip()
+            except Exception as e:
+                print(f"[digest] AI failed: {e}")
+
+    # ── Keyword fallback ──────────────────────────────────────────────────────
+    buckets: dict[str, list] = {}
+    for item in news_items:
+        if item.get("is_playbook"):
+            continue
+        title = (item.get("title") or "").lower()
+        src   = item.get("source", "?")
+        matched = False
+        for theme_name, keywords in _THEMES:
+            if any(kw in title for kw in keywords):
+                buckets.setdefault(theme_name, []).append((item.get("title", ""), src))
+                matched = True
+                break
+        if not matched:
+            buckets.setdefault("Other", []).append((item.get("title", ""), src))
+
+    parts = []
+    for theme_name, _ in _THEMES:
+        group = buckets.get(theme_name, [])
+        if not group:
+            continue
+        parts.append(theme_name)
+        for title, src in group[:3]:
+            parts.append(f"• {title} ({src})")
+    return "\n".join(parts)
 
 
 def _tr(text: str, lang: str) -> str:

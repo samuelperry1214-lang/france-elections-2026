@@ -765,40 +765,34 @@ function buildNewsCard(item, idx) {
           return item.summary.split("\n").filter(Boolean).slice(0, 3)
             .map(p => `<p class="news-card-summary">${p}</p>`).join("");
         }
-        // Playbook: render themed sections.
-        // AI output:  theme header line + "• bullet" lines
-        // Extractive: "[Theme] sentence" lines
+        // Playbook themed summary — proper state machine
+        // Lines from Haiku are either:
+        //   theme header  (no leading "• ")
+        //   bullet        (starts with "• ")
         const lines = item.summary.split("\n").filter(Boolean);
-        const isAI  = !item.ai_key_missing;
         let html = "";
-        if (isAI) {
-          // AI output: plain header lines (no "• ") start a new section
-          for (const line of lines) {
-            if (line.startsWith("• ")) {
-              html += `<li>${line.slice(2)}</li>`;
-            } else {
-              // Close any open list, then render as a theme header
-              html = html ? html + `</ul>` : html;
-              html += `<p class="playbook-theme-header">${line}</p><ul class="playbook-bullets">`;
+        let inList = false;
+
+        for (const raw of lines) {
+          // Strip any stray markdown bold Haiku might emit
+          const line = raw.replace(/\*\*([^*]+)\*\*/g, "$1").trim();
+          if (!line) continue;
+
+          if (line.startsWith("• ")) {
+            if (!inList) {
+              html += `<ul class="playbook-bullets">`;
+              inList = true;
             }
+            html += `<li>${line.slice(2)}</li>`;
+          } else {
+            // Theme header — close any open list first
+            if (inList) { html += `</ul>`; inList = false; }
+            html += `<p class="playbook-theme-header">${line}</p>`;
           }
-          if (html.includes("<ul")) html += "</ul>";
-        } else {
-          // Extractive fallback: "[Theme] sentence"
-          html = `<ul class="playbook-bullets">`;
-          for (const line of lines) {
-            const m = line.match(/^\[(.+?)\]\s*(.*)/);
-            if (m) {
-              html += `<li><span class="playbook-theme-tag">${m[1]}</span> ${m[2]}</li>`;
-            } else if (line.startsWith("• ")) {
-              html += `<li>${line.slice(2)}</li>`;
-            }
-          }
-          html += `</ul>`;
-          html += `<p class="playbook-ai-prompt">
-            For full themed AI summaries, add <code>ANTHROPIC_API_KEY</code> to your <code>.env</code>
-          </p>`;
         }
+        if (inList) html += `</ul>`;
+
+        if (!html) html = `<p class="news-card-summary">${item.summary.slice(0, 300)}</p>`;
         return html;
       })()
     : "";
@@ -868,9 +862,48 @@ document.querySelectorAll(".news-filter-btn").forEach(btn => {
     document.querySelectorAll(".news-filter-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     activeFilter = btn.dataset.source;
-    renderNews(newsItems);
+    if (activeFilter === "__digest__") {
+      renderDigest();
+    } else {
+      renderNews(newsItems);
+    }
   });
 });
+
+function renderDigest() {
+  const grid = document.getElementById("news-grid");
+  grid.innerHTML = `<div class="news-loading"><div class="spinner"></div><p>Building themed digest…</p></div>`;
+  fetch("/api/news/digest")
+    .then(r => r.json())
+    .then(data => {
+      const text = (data.digest || "").trim();
+      if (!text) {
+        grid.innerHTML = `<div class="news-error">No digest available yet — try refreshing the news first.</div>`;
+        return;
+      }
+      // Render themed digest: same state machine as Playbook summary
+      const lines = text.split("\n").filter(Boolean);
+      let html = `<div class="digest-panel">`;
+      let inList = false;
+      for (const raw of lines) {
+        const line = raw.replace(/\*\*([^*]+)\*\*/g, "$1").trim();
+        if (!line) continue;
+        if (line.startsWith("• ")) {
+          if (!inList) { html += `<ul class="digest-bullets">`; inList = true; }
+          html += `<li>${line.slice(2)}</li>`;
+        } else {
+          if (inList) { html += `</ul>`; inList = false; }
+          html += `<p class="digest-theme-header">${line}</p>`;
+        }
+      }
+      if (inList) html += `</ul>`;
+      html += `</div>`;
+      grid.innerHTML = html;
+    })
+    .catch(() => {
+      grid.innerHTML = `<div class="news-error">Could not load digest.</div>`;
+    });
+}
 document.getElementById("refresh-news").addEventListener("click", () => loadNews());
 
 // ── Results polling ───────────────────────────────────────────
