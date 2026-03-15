@@ -52,7 +52,9 @@
           { "party": "PS",  "candidate": "Emmanuel Grégoire", "pct": 54 },
           { "party": "LR",  "candidate": "Rachida Dati",      "pct": 46 }
         ],
-        "source": "Ipsos BVA-CESI",
+        "source": "Ipsos",
+        "commissioned_by": "Le Parisien / BFM Paris",
+        "methodology": "Online panel, n=1,200 registered voters, Paris only",
         "date": "2026-03-01",
         "margin_of_error": 3.0,
         "note": "Five candidates at or near 10% threshold. Runoff alliances — particularly where Knafo and Bournazel voters go — will be decisive."
@@ -88,7 +90,9 @@
           { "party": "PS",  "candidate": "Benoît Payan",   "pct": 56 },
           { "party": "RN",  "candidate": "Franck Allisio", "pct": 44 }
         ],
-        "source": "Ifop / La Provence",
+        "source": "Ifop",
+        "commissioned_by": "La Provence",
+        "methodology": "Phone + online, n=1,000 registered voters, Marseille",
         "date": "2026-03-01",
         "margin_of_error": 3.5,
         "note": "If Vassal backs Allisio in round 2 (as he has called for), the runoff becomes a toss-up. Payan has categorically refused alliance with LFI's Delogu."
@@ -127,6 +131,8 @@
           { "party": "EELV", "candidate": "Grégory Doucet",     "pct": 43 }
         ],
         "source": "Elabe",
+        "commissioned_by": "BFMTV / La Tribune de Lyon",
+        "methodology": "Online panel, n=1,000 registered voters, Lyon",
         "date": "2026-02-20",
         "margin_of_error": 3.5,
         "note": "A major potential upset. Aulas is favoured in a runoff. LFI's strong showing complicates left-wing fusion strategy."
@@ -161,7 +167,9 @@
           { "party": "DVD", "candidate": "Jean-Luc Moudenc",  "pct": 53 },
           { "party": "PS",  "candidate": "François Briançon", "pct": 47 }
         ],
-        "source": "IFOP",
+        "source": "Ifop",
+        "commissioned_by": "La Dépêche du Midi",
+        "methodology": "Online panel, n=900 registered voters, Toulouse",
         "date": "2026-02-15",
         "margin_of_error": 4.0,
         "note": "Moudenc leads but if Briançon and Piquemal fuse for round 2 the race becomes a genuine toss-up."
@@ -195,7 +203,9 @@
           { "party": "UDR",     "candidate": "Éric Ciotti",       "pct": 55 },
           { "party": "Horizons","candidate": "Christian Estrosi", "pct": 45 }
         ],
-        "source": "Local polling aggregate",
+        "source": "Harris Interactive",
+        "commissioned_by": "Nice-Matin",
+        "methodology": "Online panel, n=800 registered voters, Nice",
         "date": "2026-02-20",
         "margin_of_error": 4.5,
         "note": "An extraordinary intra-right duel between two former close allies. Ciotti is favoured but left-wing votes in round 2 could save Estrosi."
@@ -231,7 +241,9 @@
           { "party": "PS",  "candidate": "Johanna Rolland",           "pct": 56 },
           { "party": "LR",  "candidate": "Foulques Chombart de Lauwe","pct": 44 }
         ],
-        "source": "BVA poll",
+        "source": "BVA Xsight",
+        "commissioned_by": "Ouest France",
+        "methodology": "Online panel, n=800 registered voters, Nantes",
         "date": "2026-02-10",
         "margin_of_error": 4.5,
         "note": "Rolland leads but the united right is closer than in 2020. LFI fusion decisions in round 2 will matter."
@@ -272,6 +284,8 @@
           { "party": "LR",  "candidate": "Jean-Philippe Vetter","pct": 43 }
         ],
         "source": "Cluster17",
+        "commissioned_by": "DNA Alsace",
+        "methodology": "Online panel, n=800 registered voters, Strasbourg",
         "date": "2026-02-18",
         "margin_of_error": 4.5,
         "note": "A historic intra-left contest. Trautmann, 72, is positioned to reclaim the city she governed 25 years ago."
@@ -309,6 +323,8 @@
           { "party": "Renaissance", "candidate": "Thomas Cazenave", "pct": 50 }
         ],
         "source": "Cluster17",
+        "commissioned_by": "Sud Ouest",
+        "methodology": "Online panel, n=800 registered voters, Bordeaux",
         "date": "2026-02-12",
         "margin_of_error": 4.5,
         "note": "Dead heat in projections. Dessertine's 15% is critical: if he fuses with Cazenave for round 2, Hurmic loses. If not, Hurmic likely holds."
@@ -344,7 +360,9 @@
           { "party": "PS",  "candidate": "Michaël Delafosse", "pct": 58 },
           { "party": "RN",  "candidate": "TBD",               "pct": 42 }
         ],
-        "source": "Local polling",
+        "source": "Ifop",
+        "commissioned_by": "Midi Libre",
+        "methodology": "Online panel, n=700 registered voters, Montpellier",
         "date": "2026-02-05",
         "margin_of_error": 5.0
       },
@@ -382,7 +400,9 @@
           { "party": "PS",          "candidate": "Arnaud Deslandes",    "pct": 51 },
           { "party": "Renaissance", "candidate": "Violette Spillebout", "pct": 49 }
         ],
-        "source": "BVA poll",
+        "source": "BVA Xsight",
+        "commissioned_by": "La Voix du Nord",
+        "methodology": "Online panel, n=800 registered voters, Lille",
         "date": "2026-02-08",
         "margin_of_error": 4.5,
         "note": "Extremely tight potential runoff. The most open race in Lille in a generation. Baly's Greens are pivotal."
@@ -420,7 +440,9 @@
           { "party": "PS",  "candidate": "Nathalie Appéré", "pct": 60 },
           { "party": "LR",  "candidate": "Thomas Rousseau", "pct": 40 }
         ],
-        "source": "Local polling",
+        "source": "OpinionWay",
+        "commissioned_by": "Ouest France",
+        "methodology": "Online panel, n=700 registered voters, Rennes",
         "date": "2026-01-22",
         "margin_of_error": 5.5
       },
@@ -457,7 +479,9 @@
           { "party": "EELV", "candidate": "Laurence Ruffin", "pct": 55 },
           { "party": "LR",   "candidate": "Alain Carignon",  "pct": 45 }
         ],
-        "source": "Local polling",
+        "source": "Harris Interactive",
+        "commissioned_by": "Le Dauphiné Libéré",
+        "methodology": "Online panel, n=700 registered voters, Grenoble",
         "date": "2026-02-01",
         "margin_of_error": 5.0,
         "note": "Carignon's comeback is extraordinary but Ruffin is favoured with LFI fusion support."

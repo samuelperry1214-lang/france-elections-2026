@@ -242,7 +242,105 @@ function openRaceModal(race) {
       });
   }
 
+  // Load live results (election night)
+  loadRaceResults(race);
+
   raceModalOverlay.classList.remove("hidden");
+}
+
+function loadRaceResults(race) {
+  const container = document.getElementById(`results-tracker-${race.id}`);
+  const badge     = document.getElementById(`results-badge-${race.id}`);
+  if (!container) return;
+
+  fetch("/api/results")
+    .then(r => r.json())
+    .then(data => {
+      const phase = data.status?.phase || "pre_election";
+
+      if (phase === "pre_election") {
+        container.innerHTML = `<p class="results-pre-note">
+          Round 1 is today (15 March). Live results from
+          <a href="https://www.data.gouv.fr" target="_blank" rel="noopener noreferrer">data.gouv.fr</a>
+          will appear here automatically as counting progresses — this section refreshes every 5 minutes.
+        </p>`;
+        // Schedule re-check
+        setTimeout(() => loadRaceResults(race), 300000);
+        return;
+      }
+
+      // Results are live — show polls-vs-actual comparison table
+      const polls = race.polls?.round1 || [];
+      const cityResults = data.results?.[race.id] || [];
+      if (badge) {
+        badge.textContent = "LIVE";
+        badge.className   = "results-source-badge live";
+      }
+
+      if (!cityResults.length) {
+        container.innerHTML = `<p class="results-pre-note">
+          <strong>Counting in progress.</strong>
+          Data not yet published for ${race.name} —
+          <a href="https://www.data.gouv.fr" target="_blank" rel="noopener noreferrer">data.gouv.fr</a>
+          is the primary source. Refreshing every 5 minutes.
+        </p>
+        ${buildPollsVsResultsTable(polls, [], race)}`;
+        setTimeout(() => loadRaceResults(race), 300000);
+        return;
+      }
+
+      container.innerHTML = buildPollsVsResultsTable(polls, cityResults, race);
+      if (data.source) {
+        container.innerHTML += `<p class="poll-source">Source: ${data.source}</p>`;
+      }
+      setTimeout(() => loadRaceResults(race), 300000);
+    })
+    .catch(() => {
+      if (container) container.innerHTML = `<p class="results-pre-note">Could not reach results API.</p>`;
+    });
+}
+
+function buildPollsVsResultsTable(polls, actuals, race) {
+  const parties  = candidateData.parties;
+  const hasActuals = actuals && actuals.length > 0;
+
+  let html = `<table class="results-table">
+    <thead>
+      <tr>
+        <th>Candidate</th>
+        <th>Party</th>
+        <th>Poll predicted</th>
+        ${hasActuals ? "<th>Actual result</th>" : "<th style='color:var(--text-muted)'>Actual (pending)</th>"}
+      </tr>
+    </thead><tbody>`;
+
+  const sorted = [...polls].sort((a, b) => b.pct - a.pct);
+  sorted.forEach(p => {
+    const col   = PARTY_COLORS[p.party] || "#999";
+    const short = (parties[p.party] || { short: p.party }).short;
+    const actual = actuals.find(a => a.party === p.party || a.candidate === p.candidate);
+    html += `<tr>
+      <td>${p.candidate && p.candidate !== "TBD" ? p.candidate : "—"}</td>
+      <td><span class="candidate-party" style="background:${col}">${short}</span></td>
+      <td class="poll-pct-cell">
+        <div class="mini-bar-wrap">
+          <div class="mini-bar-fill" style="width:${p.pct}%;background:${col}60"></div>
+          <span>${p.pct}%</span>
+        </div>
+      </td>
+      <td class="actual-pct-cell">
+        ${hasActuals && actual
+          ? `<div class="mini-bar-wrap">
+               <div class="mini-bar-fill" style="width:${actual.pct}%;background:${col}"></div>
+               <span><strong>${actual.pct}%</strong></span>
+             </div>`
+          : `<span style="color:var(--text-muted);font-size:0.75rem;">—</span>`}
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  return html;
 }
 
 function buildRaceModalHTML(race) {
@@ -330,7 +428,12 @@ function buildRaceModalHTML(race) {
       </div>`;
     });
     html += `</div>
-      ${polls.margin_of_error ? `<p class="poll-source">±${polls.margin_of_error}% margin of error</p>` : ""}
+      <p class="poll-source">
+        ${polls.source ? `<strong>${polls.source}</strong>${polls.commissioned_by ? `, commissioned by ${polls.commissioned_by}` : ""}` : ""}
+        ${polls.methodology ? `<br><span style="font-size:0.68rem;color:var(--text-muted)">${polls.methodology}</span>` : ""}
+        ${polls.date ? ` · ${polls.date}` : ""}
+        ${polls.margin_of_error ? ` · ±${polls.margin_of_error}%` : ""}
+      </p>
     </div>`;
   }
 
@@ -357,9 +460,18 @@ function buildRaceModalHTML(race) {
     html += `<p class="race-card-competitiveness ${compClass}" style="margin-top:6px">${compLabel}</p>`;
 
     if (polls.note) html += `<p class="panel-note">${polls.note}</p>`;
-    if (polls.source) html += `<p class="poll-source">Source: ${polls.source}${polls.date ? ", " + polls.date : ""}</p>`;
     html += `</div>`;
   }
+
+  // Live results tracker (shown on election night)
+  html += `<div class="modal-section">
+    <h4 class="modal-section-title">Live Results
+      <span class="results-source-badge" id="results-badge-${race.id}"></span>
+    </h4>
+    <div id="results-tracker-${race.id}" class="results-tracker">
+      <div class="results-loading"><div class="spinner"></div><p>Checking for results…</p></div>
+    </div>
+  </div>`;
 
   // News section (async)
   html += `<div class="modal-section">
@@ -629,7 +741,7 @@ function renderNews(items) {
       const expanded = _expandedCards.has(idx);
       if (expanded) {
         panel.classList.add("hidden");
-        btn.textContent = "Read full newsletter ▾";
+        btn.textContent = "Read full translated edition ▾";
         _expandedCards.delete(idx);
       } else {
         panel.classList.remove("hidden");
@@ -646,10 +758,22 @@ function buildNewsCard(item, idx) {
   const translated  = item.title_original && item.title_original !== item.title;
   const paywallNote = item.paywall_note || "";
 
-  // Format summary paragraphs (newlines → <p>)
+  // Format summary: Playbook bullets use "• **Header**: text", others use paragraphs
   const summaryHtml = item.summary
-    ? item.summary.split("\n").filter(Boolean).slice(0, 3)
-        .map(p => `<p class="news-card-summary">${p}</p>`).join("")
+    ? (() => {
+        const lines = item.summary.split("\n").filter(Boolean);
+        if (isPlaybook) {
+          // Render each "• **Header**: body" bullet as a styled list item
+          return `<ul class="playbook-bullets">${lines.map(line => {
+            // Convert markdown bold "**Header**" → <strong>
+            const rendered = line
+              .replace(/^•\s*/, "")
+              .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+            return `<li>${rendered}</li>`;
+          }).join("")}</ul>`;
+        }
+        return lines.slice(0, 3).map(p => `<p class="news-card-summary">${p}</p>`).join("");
+      })()
     : "";
 
   const fullHtml = hasFullText
@@ -672,10 +796,10 @@ function buildNewsCard(item, idx) {
             : `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>`}
         </div>
         ${item.published ? `<div class="news-card-date">${item.published}</div>` : ""}
-        ${isPlaybook && summaryHtml ? `<div class="playbook-summary-label">Summary</div>${summaryHtml}` : summaryHtml}
+        ${summaryHtml}
         ${paywallNote ? `<p class="paywall-note">ℹ ${paywallNote}</p>` : ""}
         ${hasFullText ? `
-          <button class="playbook-expand-btn" data-idx="${idx}">Read full newsletter ▾</button>
+          <button class="playbook-expand-btn" data-idx="${idx}">Read full translated edition ▾</button>
           <div id="playbook-full-${idx}" class="playbook-full-text hidden">${fullHtml}
             <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="playbook-source-link">View original at Politico →</a>
           </div>` : ""}

@@ -14,6 +14,7 @@ which are freely available even behind a paywall.  We do NOT link to
 paywalled full articles — we show the translated headline + RSS abstract.
 """
 
+import re
 import feedparser
 import requests
 from bs4 import BeautifulSoup
@@ -175,6 +176,91 @@ def _extract_summary(text: str, max_words: int = 250) -> str:
     return " ".join(words[:max_words]) + "…"
 
 
+# ── Playbook parsing helpers ──────────────────────────────────────────────────
+
+_BOILERPLATE_FRAGS = [
+    "view in browser", "view this email", "unsubscribe", "subscribe now",
+    "get this newsletter", "written by", "edited by", "reported by",
+    "produced by", "contact us at", "advertise with", "if you were forwarded",
+    "share this newsletter", "sign up for", "manage your email",
+    "privacy policy", "terms of service", "all rights reserved", "© 20",
+    "send your tips", "reach the team", "follow us on", "twitter.com",
+    "linkedin.com", "facebook.com", "politico.eu/newsletter", "to unsubscribe",
+    "have a tip?", "tips to playbook", "this email was sent", "email preferences",
+    "brussels playbook", "london playbook", "berlin bulletin",
+]
+
+# Matches lines like:  MACRON IN LEBANON — He met with…
+_ALLCAPS_HEADER_RE = re.compile(
+    r'^([A-Z][A-Z0-9\s\'\-\,\.]{4,})\s*[—\-–]\s*(.*)',
+    re.DOTALL,
+)
+
+
+def _is_boilerplate(text: str) -> bool:
+    low = text.lower()
+    return any(f in low for f in _BOILERPLATE_FRAGS)
+
+
+def _parse_playbook_bullets(translated_text: str, max_bullets: int = 12) -> str:
+    """
+    Convert translated Playbook body into a bullet-point summary.
+
+    - Identifies ALL-CAPS section headers (e.g. "MACRON IN LEBANON —")
+    - Strips subscription boilerplate, author lines, and opening joke/pun
+    - Returns a newline-separated string:
+        • **Macron In Lebanon**: He met with the prime minister…
+        • **Local Elections**: In Paris, polls show…
+    """
+    bullets: list[str] = []
+    skip_first_allcaps = True   # first ALL-CAPS block is usually the opening pun
+    current_header: str | None = None
+    current_parts: list[str] = []
+
+    def flush() -> None:
+        nonlocal current_header, current_parts
+        if not current_parts and not current_header:
+            return
+        body = " ".join(current_parts).strip()
+        words = body.split()
+        snippet = " ".join(words[:40]) + ("…" if len(words) > 40 else "")
+        if current_header:
+            bullets.append(f"• **{current_header}**: {snippet}")
+        elif snippet:
+            bullets.append(f"• {snippet}")
+        current_header = None
+        current_parts = []
+
+    for raw_line in translated_text.split("\n"):
+        para = raw_line.strip()
+        if not para or len(para) < 25:
+            continue
+        if _is_boilerplate(para):
+            continue
+
+        m = _ALLCAPS_HEADER_RE.match(para)
+        if m:
+            raw_header = m.group(1).strip().rstrip(",. ")
+            body_after  = m.group(2).strip()
+            if skip_first_allcaps:
+                skip_first_allcaps = False
+                continue   # discard the opening pun/joke line
+            flush()
+            if len(bullets) >= max_bullets:
+                break
+            # Title-case the header: "MACRON IN LEBANON" → "Macron in Lebanon"
+            current_header = raw_header.capitalize()
+            if body_after:
+                current_parts = [body_after]
+        else:
+            if current_header is not None:
+                current_parts.append(para)
+            # Pre-header lines (greeting, dateline) are silently dropped
+
+    flush()
+    return "\n".join(bullets)
+
+
 def _tr(text: str, lang: str) -> str:
     """Translate if French, else return as-is."""
     if lang != "fr" or not text:
@@ -296,11 +382,11 @@ def _fetch_playbook_edition(url: str) -> dict | None:
         body_parts = []
         for p in paras:
             txt = p.get_text(strip=True)
-            if len(txt) > 30:  # skip nav snippets
+            if len(txt) > 30 and not _is_boilerplate(txt):
                 body_parts.append(txt)
             if sum(len(x) for x in body_parts) > 4000:
                 break
-        full_text = "\n\n".join(body_parts)
+        full_text = "\n".join(body_parts)
 
         if not title and not full_text:
             return None
@@ -371,8 +457,11 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
         title_en    = translate_to_english(edition["title"]) if edition["title"] else "(Untitled)"
         # Translate full text in one call (up to 4000 chars)
         full_en     = translate_to_english(edition["full_text"]) if edition["full_text"] else ""
-        # Summary = extractive ~250 words from start of translated full text
-        summary_en  = _extract_summary(full_en, 250)
+        # Bullet summary: parse ALL-CAPS sections → "• **Header**: snippet…"
+        summary_en  = _parse_playbook_bullets(full_en) if full_en else ""
+        # Fallback to plain extract if bullet parser found nothing
+        if not summary_en:
+            summary_en = _extract_summary(full_en, 250)
 
         items.append({
             "source":         "Paris Playbook",
