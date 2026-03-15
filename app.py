@@ -133,5 +133,25 @@ def get_usage():
     return jsonify(get_usage())
 
 
+@app.route("/api/debug")
+def get_debug():
+    import os
+    has_anthropic = bool(os.environ.get("ANTHROPIC_API_KEY", ""))
+    has_deepl     = bool(os.environ.get("DEEPL_API_KEY", ""))
+    vercel        = os.environ.get("VERCEL", "")
+    from scrapers.usage import _USAGE_PATH, budget_ok
+    try:
+        ok = budget_ok()
+    except Exception as e:
+        ok = f"error: {e}"
+    return jsonify({
+        "anthropic_key_set": has_anthropic,
+        "deepl_key_set":     has_deepl,
+        "vercel_env":        vercel,
+        "usage_path":        _USAGE_PATH,
+        "budget_ok":         ok,
+    })
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
