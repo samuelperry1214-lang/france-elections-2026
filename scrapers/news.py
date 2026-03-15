@@ -178,86 +178,104 @@ def _extract_summary(text: str, max_words: int = 250) -> str:
 
 # ── Playbook parsing helpers ──────────────────────────────────────────────────
 
-_BOILERPLATE_FRAGS = [
-    "view in browser", "view this email", "unsubscribe", "subscribe now",
-    "get this newsletter", "written by", "edited by", "reported by",
-    "produced by", "contact us at", "advertise with", "if you were forwarded",
-    "share this newsletter", "sign up for", "manage your email",
-    "privacy policy", "terms of service", "all rights reserved", "© 20",
-    "send your tips", "reach the team", "follow us on", "twitter.com",
-    "linkedin.com", "facebook.com", "politico.eu/newsletter", "to unsubscribe",
-    "have a tip?", "tips to playbook", "this email was sent", "email preferences",
-    "brussels playbook", "london playbook", "berlin bulletin",
+# Paragraph that marks the boundary: real content starts AFTER this line
+_CONTENT_START_FRAGS = [
+    "voir dans le navigateur", "view in browser",
+    "envoyez vos infos", "send your tips",
+    "abonnez-vous gratuitement",
 ]
 
-# Matches lines like:  MACRON IN LEBANON — He met with…
-_ALLCAPS_HEADER_RE = re.compile(
-    r'^([A-Z][A-Z0-9\s\'\-\,\.]{4,})\s*[—\-–]\s*(.*)',
+# Paragraphs that signal we've reached the footer — stop here
+_FOOTER_START_FRAGS = [
+    "à la une :", "a la une :", "dans la presse régionale",
+    "dans nos newsletters", "abonnez-vous aux newsletters",
+    "subscribe to politico", "aux manettes", "anniversaires",
+    "playlist.", "météo.", "dans le jorf",
+    "au tableau des médailles", "un grand merci",
+    "morning defense", "morning tech", "paris influence",
+    "tech matin", "énergie & climat", "energie & climat",
+    "et aussi dans", "plus tard.", "pense-bête", "casting.",
+]
+
+# Lines to silently skip inside the content block (ads, radio schedule)
+_INLINE_SKIP_FRAGS = [
+    "un message de ", "a message from ", "présenté par ", "presente par ",
+    "sponsored by ", "**un message",
+]
+_RADIO_RE = re.compile(r'^\d+h\d*[\.:]')   # "7h20.RFI:" or "7h20. RFI:"
+
+
+def _is_content_start(text: str) -> bool:
+    low = text.lower()
+    return any(f in low for f in _CONTENT_START_FRAGS)
+
+
+def _is_footer_start(text: str) -> bool:
+    low = text.lower().strip()
+    return any(low.startswith(f) or f in low[:80] for f in _FOOTER_START_FRAGS)
+
+
+def _is_inline_skip(text: str) -> bool:
+    low = text.lower()
+    return any(f in low for f in _INLINE_SKIP_FRAGS) or bool(_RADIO_RE.match(text))
+
+
+def _is_boilerplate(text: str) -> bool:
+    return _is_inline_skip(text)
+
+
+# Detects an ALL-CAPS opener like "DANS LA NUIT," or "TEST N°1." at line start
+_ALLCAPS_OPENER_RE = re.compile(
+    r'^([A-ZÀÂÄÉÈÊËÎÏÔÙÛÜÆŒ°N\s\'\-\,\.«»0-9]{5,}?)[,\.]\s+(.*)',
     re.DOTALL,
 )
 
 
-def _is_boilerplate(text: str) -> bool:
-    low = text.lower()
-    return any(f in low for f in _BOILERPLATE_FRAGS)
-
-
-def _parse_playbook_bullets(translated_text: str, max_bullets: int = 12) -> str:
+def _parse_playbook_bullets(translated_text: str, max_words: int = 300) -> str:
     """
-    Convert translated Playbook body into a bullet-point summary.
+    Convert translated Playbook body (post-separator, pre-footer) to bullet points.
 
-    - Identifies ALL-CAPS section headers (e.g. "MACRON IN LEBANON —")
-    - Strips subscription boilerplate, author lines, and opening joke/pun
-    - Returns a newline-separated string:
-        • **Macron In Lebanon**: He met with the prime minister…
-        • **Local Elections**: In Paris, polls show…
+    Paragraphs that open with an ALL-CAPS keyword become:
+        • **Macron In Lebanon**: First two sentences of content…
+    Plain paragraphs become:
+        • First two sentences…
+
+    Total output is clipped to ≈ max_words.
     """
     bullets: list[str] = []
-    skip_first_allcaps = True   # first ALL-CAPS block is usually the opening pun
-    current_header: str | None = None
-    current_parts: list[str] = []
-
-    def flush() -> None:
-        nonlocal current_header, current_parts
-        if not current_parts and not current_header:
-            return
-        body = " ".join(current_parts).strip()
-        words = body.split()
-        snippet = " ".join(words[:40]) + ("…" if len(words) > 40 else "")
-        if current_header:
-            bullets.append(f"• **{current_header}**: {snippet}")
-        elif snippet:
-            bullets.append(f"• {snippet}")
-        current_header = None
-        current_parts = []
+    total_words = 0
 
     for raw_line in translated_text.split("\n"):
         para = raw_line.strip()
-        if not para or len(para) < 25:
-            continue
-        if _is_boilerplate(para):
+        if not para or len(para) < 40:
             continue
 
-        m = _ALLCAPS_HEADER_RE.match(para)
-        if m:
-            raw_header = m.group(1).strip().rstrip(",. ")
-            body_after  = m.group(2).strip()
-            if skip_first_allcaps:
-                skip_first_allcaps = False
-                continue   # discard the opening pun/joke line
-            flush()
-            if len(bullets) >= max_bullets:
-                break
-            # Title-case the header: "MACRON IN LEBANON" → "Macron in Lebanon"
-            current_header = raw_header.capitalize()
-            if body_after:
-                current_parts = [body_after]
+        m = _ALLCAPS_OPENER_RE.match(para)
+        if m and m.group(1).strip().isupper():
+            header = m.group(1).strip().rstrip(",. ").title()
+            body   = m.group(2).strip()
         else:
-            if current_header is not None:
-                current_parts.append(para)
-            # Pre-header lines (greeting, dateline) are silently dropped
+            header = None
+            body   = para
 
-    flush()
+        sentences = re.split(r'(?<=[.!?])\s+', body)
+        snippet   = " ".join(sentences[:2]).strip()
+        words     = snippet.split()
+
+        remaining = max_words - total_words
+        if remaining <= 10:
+            break
+        if len(words) > remaining:
+            snippet = " ".join(words[:remaining]) + "…"
+            words   = words[:remaining]
+
+        bullet = f"• **{header}**: {snippet}" if header else f"• {snippet}"
+        bullets.append(bullet)
+        total_words += len(words)
+
+        if total_words >= max_words:
+            break
+
     return "\n".join(bullets)
 
 
@@ -379,12 +397,24 @@ def _fetch_playbook_edition(url: str) -> dict | None:
         )
         paras = article.find_all("p") if article else soup.find_all("p")
 
-        body_parts = []
+        # Only collect paragraphs AFTER the "Envoyez vos infos|Voir dans le navigateur"
+        # separator, and BEFORE the footer (À la une, Anniversaires, etc.)
+        found_start = False
+        body_parts  = []
         for p in paras:
             txt = p.get_text(strip=True)
-            if len(txt) > 30 and not _is_boilerplate(txt):
-                body_parts.append(txt)
-            if sum(len(x) for x in body_parts) > 4000:
+            if not txt:
+                continue
+            if not found_start:
+                if _is_content_start(txt):
+                    found_start = True
+                continue   # skip header block (author, sponsor, separator line itself)
+            if _is_footer_start(txt):
+                break      # stop at footer
+            if _is_inline_skip(txt) or len(txt) < 35:
+                continue   # skip ads, radio schedules, short nav snippets
+            body_parts.append(txt)
+            if sum(len(x) for x in body_parts) > 10000:
                 break
         full_text = "\n".join(body_parts)
 
