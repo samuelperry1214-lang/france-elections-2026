@@ -614,10 +614,10 @@ function buildRacePanelHTML(race) {
   if (cityResult && cityResult.lists?.length) {
     html += `<div class="panel-section-title">Round 1 Result</div><div class="poll-bar-wrap">`;
     cityResult.lists.slice(0, 6).forEach(p => {
-      const col   = PARTY_COLORS[p.party] || "#999";
-      const short = p.label.length > 22 ? p.label.slice(0, 22) + "…" : p.label;
+      const col  = PARTY_COLORS[p.party] || "#999";
+      const name = resolveActualName(p, race);
       html += `<div class="poll-bar-row">
-        <div class="poll-bar-label" style="color:${col};font-weight:700;">${short}</div>
+        <div class="poll-bar-label" style="color:${col};font-weight:700;">${name}</div>
         <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${p.pct}%;background:${col}"></div></div>
         <div class="poll-bar-pct">${p.pct}%${p.elected ? " ✓" : ""}</div>
       </div>`;
@@ -713,6 +713,32 @@ function loadDeptLayer() {
     .catch(err => console.error("GeoJSON load failed:", err));
 }
 
+// ── Resolve actual list → candidate name ─────────────────────
+// Given a list object from live results and its race, returns the best
+// human-readable candidate name (from polls) or the list label as fallback.
+function resolveActualName(list, race) {
+  const polls = race.polls?.round1 || [];
+
+  // 1. Explicit list_abbrev match (Paris-style codes)
+  const byAbbrev = polls.find(p => p.list_abbrev && p.list_abbrev === list.label);
+  if (byAbbrev) return byAbbrev.candidate || byAbbrev.party;
+
+  // 2. Poll candidate's last name appears in the full list label
+  const fullLower = (list.full_label || list.label || "").toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const byName = polls.find(p => {
+    if (!p.candidate) return false;
+    const last = p.candidate.split(/\s+/).pop().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return last.length > 3 && fullLower.includes(last);
+  });
+  if (byName) return byName.candidate;
+
+  // 3. Fallback: truncated full label
+  const lbl = list.full_label || list.label || list.party;
+  return lbl.length > 30 ? lbl.slice(0, 30) + "…" : lbl;
+}
+
 // ── Mayor race dot markers ────────────────────────────────────
 function buildMayoralMarkers() {
   majorCityMarkers.forEach(m => map.removeLayer(m));
@@ -736,9 +762,10 @@ function buildMayoralMarkers() {
       .on("mouseover", e => {
         const tip = cityResult
           ? `<strong>${race.name} — Round 1 Result</strong><br>
-             ${cityResult.lists.slice(0, 3).map(l =>
-               `<span style="color:${PARTY_COLORS[l.party]||'#ccc'}">●</span> ${l.label}: <strong>${l.pct}%</strong>${l.elected ? " ✓ Elected" : ""}`
-             ).join("<br>")}
+             ${cityResult.lists.slice(0, 4).map(l => {
+               const name = resolveActualName(l, race);
+               return `<span style="color:${PARTY_COLORS[l.party]||'#ccc'}">●</span> <strong>${name}</strong>: ${l.pct}%${l.elected ? " ✓" : ""}`;
+             }).join("<br>")}
              <br><small>Turnout: ${cityResult.turnout_pct}%</small>`
           : `<strong>${race.name} — Mayoral Race</strong><br>
              Outgoing: ${race.incumbent.name} (${race.incumbent.party})<br>
