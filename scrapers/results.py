@@ -23,14 +23,30 @@ COMMUNE_CODES = {
     "38185": "grenoble",
 }
 
-# Map French electoral nuance codes to our party keys
+# Map French 2026 municipal election nuance codes to our party keys
 NUANCE_TO_PARTY = {
-    "ENS": "EN", "REN": "EN", "MDM": "EN", "DVC": "EN", "LREM": "EN",
-    "RN": "RN", "RBM": "RN", "EXD": "RN",
-    "LFI": "LFI", "LVFI": "LFI", "EXG": "LFI", "PC": "LFI", "NPA": "LFI",
-    "SOC": "PS", "PS": "PS", "DVG": "PS", "UG": "PS", "LDVG": "PS",
-    "EELV": "EELV", "ECO": "EELV",
-    "LR": "LR", "DVD": "LR", "UD": "LR", "DLR": "LR", "LDVD": "LR",
+    # Left coalitions & parties
+    "LUG":  "PS",         # Union de la Gauche (Grégoire, Payan, Doucet…)
+    "LSOC": "PS",         # Socialiste (Trautmann in Strasbourg)
+    "LDVG": "PS",         # Diverse Gauche
+    "LFI":  "LFI",        # France Insoumise
+    "LEXG": "LFI",        # Extrême Gauche (LO, NPA…)
+    "LECO": "EELV",       # Écologiste
+    "LVEC": "EELV",       # Verts / Écologiste Citoyens (Baly Lille)
+    # Centre coalitions
+    "LUC":  "Horizons",   # Union du Centre (Bournazel, Gandon…)
+    "LDVC": "DVD",        # Diverse Centre (Aulas Lyon, Dessertine Bordeaux…)
+    # Right
+    "LLR":  "LR",         # Les Républicains
+    "LUD":  "LR",         # Union de la Droite (Dati Paris, Estrosi Nice…)
+    "LDVD": "LR",         # Diverse Droite (Moudenc Toulouse, Vassal Marseille…)
+    # Far right
+    "LRN":  "RN",         # Rassemblement National
+    "LUXD": "RN",         # Union Extrême Droite (Mariani Paris, Ciotti Nice…)
+    "LEXD": "Reconquête", # Extrême Droite (Knafo Paris)
+    "LREC": "Reconquête", # Reconquête
+    # Other
+    "LDIV": "Other",      # Divers
 }
 
 # CSV column layout (from actual header analysis)
@@ -109,12 +125,19 @@ def _parse_communes_csv(url: str) -> dict:
                 nuance = row[base + OFF_NUANCE].strip()
                 if not nuance:
                     continue
-                label  = row[base + OFF_ABBREV].strip() or row[base + OFF_LONG].strip()
-                pct    = _pct(row[base + OFF_PCT_EXP])
-                elu    = row[base + OFF_ELU].strip() == "1"
-                party  = NUANCE_TO_PARTY.get(nuance, "Other")
-                lists.append({"nuance": nuance, "label": label,
-                               "party": party, "pct": pct, "elected": elu})
+                label      = row[base + OFF_ABBREV].strip()
+                full_label = row[base + OFF_LONG].strip()
+                pct        = _pct(row[base + OFF_PCT_EXP])
+                elu        = row[base + OFF_ELU].strip() == "1"
+                party      = NUANCE_TO_PARTY.get(nuance, "Other")
+                lists.append({
+                    "nuance":     nuance,
+                    "label":      label or full_label,
+                    "full_label": full_label or label,
+                    "party":      party,
+                    "pct":        pct,
+                    "elected":    elu,
+                })
 
             lists.sort(key=lambda x: x["pct"], reverse=True)
             winner = next((l for l in lists if l["elected"]), None)

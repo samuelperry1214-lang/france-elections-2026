@@ -41,12 +41,12 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",         "candidate": "Emmanuel Grégoire",    "pct": 33 },
-          { "party": "LR",         "candidate": "Rachida Dati",         "pct": 27 },
-          { "party": "Horizons",   "candidate": "Pierre-Yves Bournazel","pct": 11.5 },
-          { "party": "Reconquête", "candidate": "Sarah Knafo",          "pct": 11.5 },
-          { "party": "LFI",        "candidate": "Sophia Chikirou",      "pct": 10 },
-          { "party": "RN",         "candidate": "Thierry Mariani",      "pct": 7 }
+          { "party": "PS",         "candidate": "Emmanuel Grégoire",    "pct": 33,  "list_abbrev": "EG" },
+          { "party": "LR",         "candidate": "Rachida Dati",         "pct": 27,  "list_abbrev": "CPARD" },
+          { "party": "Horizons",   "candidate": "Pierre-Yves Bournazel","pct": 11.5,"list_abbrev": "PAAPYB" },
+          { "party": "Reconquête", "candidate": "Sarah Knafo",          "pct": 11.5,"list_abbrev": "SK UVH" },
+          { "party": "LFI",        "candidate": "Sophia Chikirou",      "pct": 10,  "list_abbrev": "LNPP" },
+          { "party": "RN",         "candidate": "Thierry Mariani",      "pct": 7,   "list_abbrev": "RP" }
         ],
         "round2_projection": [
           { "party": "PS",  "candidate": "Emmanuel Grégoire", "pct": 54 },

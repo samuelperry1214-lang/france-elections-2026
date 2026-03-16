@@ -326,11 +326,38 @@ function buildPollsVsResultsTable(polls, actuals, race) {
       </tr>
     </thead><tbody>`;
 
+  // Track which actual lists have been matched so we don't double-count
+  const matchedActuals = new Set();
+
+  function findActual(p) {
+    const lastName = (p.candidate || "").split(/\s+/).pop().toLowerCase();
+
+    // 1. Explicit abbreviation match (Paris-style short codes like EG, CPARD)
+    if (p.list_abbrev) {
+      const m = actuals.find(a => a.label === p.list_abbrev && !matchedActuals.has(a.label));
+      if (m) { matchedActuals.add(m.label); return m; }
+    }
+
+    // 2. Candidate last name in the full list label
+    if (lastName.length > 3) {
+      const m = actuals.find(a =>
+        !matchedActuals.has(a.label) &&
+        (a.full_label || a.label || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .includes(lastName.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
+      );
+      if (m) { matchedActuals.add(m.label); return m; }
+    }
+
+    // 3. Party match fallback
+    return actuals.find(a => !matchedActuals.has(a.label) && a.party === p.party);
+  }
+
   const sorted = [...polls].sort((a, b) => b.pct - a.pct);
   sorted.forEach(p => {
     const col   = PARTY_COLORS[p.party] || "#999";
     const short = (parties[p.party] || { short: p.party }).short;
-    const actual = actuals.find(a => a.party === p.party || a.candidate === p.candidate);
+    const actual = findActual(p);
+    if (actual) matchedActuals.add(actual.label);
     html += `<tr>
       <td>${p.candidate && p.candidate !== "TBD" ? p.candidate : "—"}</td>
       <td><span class="candidate-party" style="background:${col}">${short}</span></td>
@@ -351,14 +378,16 @@ function buildPollsVsResultsTable(polls, actuals, race) {
     </tr>`;
   });
 
-  // Append any actual-result lists not covered by the polls
+  // Append any actual-result lists not matched to a poll candidate
   if (hasActuals) {
-    const matchedParties = new Set(sorted.map(p => p.party));
-    const extras = actuals.filter(a => !matchedParties.has(a.party));
+    const extras = actuals.filter(a => !matchedActuals.has(a.label));
     extras.forEach(a => {
-      const col = PARTY_COLORS[a.party] || "#999";
+      const col        = PARTY_COLORS[a.party] || "#999";
+      const displayName = a.full_label
+        ? (a.full_label.length > 50 ? a.full_label.slice(0, 50) + "…" : a.full_label)
+        : a.label;
       html += `<tr>
-        <td>${a.label || "—"}</td>
+        <td style="font-size:0.82rem">${displayName}</td>
         <td><span class="candidate-party" style="background:${col}">${a.party}</span></td>
         <td class="poll-pct-cell"><span style="color:var(--text-muted);font-size:0.75rem;">not polled</span></td>
         <td class="actual-pct-cell">
