@@ -4,6 +4,7 @@
 
 let candidateData = null;
 let electionStatus = null;
+let liveResults = null;   // populated from /api/results when round1/round2
 let deptLayer = null;
 let majorCityMarkers = [];
 let newsItems = [];
@@ -271,13 +272,14 @@ function loadRaceResults(race) {
 
       // Results are live — show polls-vs-actual comparison table
       const polls = race.polls?.round1 || [];
-      const cityResults = data.results?.[race.id] || [];
+      const cityData = data.results?.[race.id];
+      const cityLists = cityData?.lists || [];
       if (badge) {
         badge.textContent = "LIVE";
         badge.className   = "results-source-badge live";
       }
 
-      if (!cityResults.length) {
+      if (!cityLists.length) {
         container.innerHTML = `<p class="results-pre-note">
           <strong>Counting in progress.</strong>
           Data not yet published for ${race.name} —
@@ -289,10 +291,20 @@ function loadRaceResults(race) {
         return;
       }
 
-      container.innerHTML = buildPollsVsResultsTable(polls, cityResults, race);
-      if (data.source) {
-        container.innerHTML += `<p class="poll-source">Source: ${data.source}</p>`;
+      let extra = "";
+      if (cityData?.winner) {
+        const wCol = PARTY_COLORS[cityData.winner.party] || "#999";
+        extra = `<p class="results-winner-note" style="border-left:3px solid ${wCol};padding-left:8px;margin-top:8px">
+          <strong style="color:${wCol}">Elected in Round 1:</strong> ${cityData.winner.label} — ${cityData.winner.pct}%
+        </p>`;
+      } else if (cityData?.round2_needed) {
+        extra = `<p class="results-pre-note"><strong>No majority — Round 2 required (22 March)</strong></p>`;
       }
+      if (cityData) {
+        extra += `<p class="poll-source">Turnout: ${cityData.turnout_pct}% &nbsp;·&nbsp; Source: ${data.source || "data.gouv.fr"}</p>`;
+      }
+
+      container.innerHTML = buildPollsVsResultsTable(polls, cityLists, race) + extra;
       setTimeout(() => loadRaceResults(race), 300000);
     })
     .catch(() => {
@@ -338,6 +350,26 @@ function buildPollsVsResultsTable(polls, actuals, race) {
       </td>
     </tr>`;
   });
+
+  // Append any actual-result lists not covered by the polls
+  if (hasActuals) {
+    const matchedParties = new Set(sorted.map(p => p.party));
+    const extras = actuals.filter(a => !matchedParties.has(a.party));
+    extras.forEach(a => {
+      const col = PARTY_COLORS[a.party] || "#999";
+      html += `<tr>
+        <td>${a.label || "—"}</td>
+        <td><span class="candidate-party" style="background:${col}">${a.party}</span></td>
+        <td class="poll-pct-cell"><span style="color:var(--text-muted);font-size:0.75rem;">not polled</span></td>
+        <td class="actual-pct-cell">
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-fill" style="width:${a.pct}%;background:${col}"></div>
+            <span><strong>${a.pct}%</strong>${a.elected ? " ✓" : ""}</span>
+          </div>
+        </td>
+      </tr>`;
+    });
+  }
 
   html += `</tbody></table>`;
   return html;
@@ -506,31 +538,46 @@ function buildRacePanelHTML(race) {
       <span class="candidate-party" style="background:${incColor}">${inc.party}</span>
     </div>`;
 
-  if (polls && polls.round1) {
-    html += `<div class="panel-section-title">Round 1 Projection</div><div class="poll-bar-wrap">`;
-    [...polls.round1].sort((a,b) => b.pct - a.pct).forEach(p => {
+  const cityResult = liveResults?.[race.id];
+  if (cityResult && cityResult.lists?.length) {
+    html += `<div class="panel-section-title">Round 1 Result</div><div class="poll-bar-wrap">`;
+    cityResult.lists.slice(0, 6).forEach(p => {
       const col   = PARTY_COLORS[p.party] || "#999";
-      const short = (parties[p.party] || { short: p.party }).short;
+      const short = p.label.length > 22 ? p.label.slice(0, 22) + "…" : p.label;
       html += `<div class="poll-bar-row">
         <div class="poll-bar-label" style="color:${col};font-weight:700;">${short}</div>
         <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${p.pct}%;background:${col}"></div></div>
-        <div class="poll-bar-pct">${p.pct}%</div>
+        <div class="poll-bar-pct">${p.pct}%${p.elected ? " ✓" : ""}</div>
       </div>`;
     });
     html += `</div>`;
-  }
-
-  if (polls && polls.round2_projection) {
-    html += `<div class="runoff-header">Runoff Projection</div><div class="runoff-bar">`;
-    polls.round2_projection.forEach(p => {
-      const col   = PARTY_COLORS[p.party] || "#999";
-      const label = p.candidate && p.candidate !== "TBD" ? p.candidate.split(" ").slice(-1)[0] : p.party;
-      html += `<div class="runoff-segment" style="width:${p.pct}%;background:${col}">
-        <span>${label}</span><span>${p.pct}%</span>
-      </div>`;
-    });
-    html += `</div>`;
-    if (polls.note) html += `<p class="panel-note">${polls.note}</p>`;
+    if (cityResult.round2_needed) html += `<p class="panel-note">No majority — Round 2: 22 March</p>`;
+  } else {
+    if (polls && polls.round1) {
+      html += `<div class="panel-section-title">Round 1 Projection</div><div class="poll-bar-wrap">`;
+      [...polls.round1].sort((a,b) => b.pct - a.pct).forEach(p => {
+        const col   = PARTY_COLORS[p.party] || "#999";
+        const short = (parties[p.party] || { short: p.party }).short;
+        html += `<div class="poll-bar-row">
+          <div class="poll-bar-label" style="color:${col};font-weight:700;">${short}</div>
+          <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${p.pct}%;background:${col}"></div></div>
+          <div class="poll-bar-pct">${p.pct}%</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    if (polls && polls.round2_projection) {
+      html += `<div class="runoff-header">Runoff Projection</div><div class="runoff-bar">`;
+      polls.round2_projection.forEach(p => {
+        const col   = PARTY_COLORS[p.party] || "#999";
+        const label = p.candidate && p.candidate !== "TBD" ? p.candidate.split(" ").slice(-1)[0] : p.party;
+        html += `<div class="runoff-segment" style="width:${p.pct}%;background:${col}">
+          <span>${label}</span><span>${p.pct}%</span>
+        </div>`;
+      });
+      html += `</div>`;
+      if (polls.note) html += `<p class="panel-note">${polls.note}</p>`;
+    }
   }
 
   html += `<button class="panel-more-btn" onclick="openRaceModalById('${race.id}')">Full analysis &amp; news →</button>`;
@@ -602,18 +649,29 @@ function buildMayoralMarkers() {
 
   candidateData.major_races.forEach(race => {
     const [lng, lat] = race.coordinates;
-    const incColor   = PARTY_COLORS[race.incumbent.party] || "#999";
+    const cityResult = liveResults?.[race.id];
+    const leader = cityResult
+      ? (cityResult.winner || cityResult.lists?.[0])
+      : race.polls?.round1?.reduce((a, b) => a.pct > b.pct ? a : b);
+    const dotColor = (leader && PARTY_COLORS[leader.party]) || PARTY_COLORS[race.incumbent.party] || "#999";
+
     const icon = L.divIcon({
-      html: `<div class="mayor-dot-icon" style="background:${incColor}"></div>`,
+      html: `<div class="mayor-dot-icon" style="background:${dotColor}"></div>`,
       className: "", iconSize: [18, 18], iconAnchor: [9, 9],
     });
     const marker = L.marker([lat, lng], { icon })
       .addTo(map)
       .on("mouseover", e => {
-        const leader = race.polls?.round1?.reduce((a, b) => a.pct > b.pct ? a : b);
-        showTooltip(e, `<strong>${race.name} — Mayoral Race</strong><br>
-          Outgoing: ${race.incumbent.name} (${race.incumbent.party})<br>
-          ${leader ? `Leading: <strong>${leader.candidate || leader.party}</strong> ${leader.pct}%` : ""}`);
+        const tip = cityResult
+          ? `<strong>${race.name} — Round 1 Result</strong><br>
+             ${cityResult.lists.slice(0, 3).map(l =>
+               `<span style="color:${PARTY_COLORS[l.party]||'#ccc'}">●</span> ${l.label}: <strong>${l.pct}%</strong>${l.elected ? " ✓ Elected" : ""}`
+             ).join("<br>")}
+             <br><small>Turnout: ${cityResult.turnout_pct}%</small>`
+          : `<strong>${race.name} — Mayoral Race</strong><br>
+             Outgoing: ${race.incumbent.name} (${race.incumbent.party})<br>
+             ${leader ? `Projected: <strong>${leader.candidate || leader.party}</strong> ${leader.pct}%` : ""}`;
+        showTooltip(e, tip);
       })
       .on("mousemove", moveTooltip)
       .on("mouseout",  hideTooltip)
@@ -962,8 +1020,22 @@ async function init() {
   const resp = await fetch("/api/candidates");
   candidateData = await resp.json();
   loadDeptLayer();
-  buildMayoralMarkers();
-  buildRacesGrid();
+
+  // Load live results immediately; rebuild markers once we have them
+  fetch("/api/results")
+    .then(r => r.json())
+    .then(data => {
+      if (data.status?.phase !== "pre_election" && data.results) {
+        liveResults = data.results;
+      }
+      buildMayoralMarkers();
+      buildRacesGrid();
+    })
+    .catch(() => {
+      buildMayoralMarkers();
+      buildRacesGrid();
+    });
+
   startResultsPolling();
   loadNews();
   setInterval(loadNews, 600000);
