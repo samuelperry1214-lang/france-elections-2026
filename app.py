@@ -127,6 +127,36 @@ def get_news_digest():
     return jsonify({"digest": digest})
 
 
+@app.route("/api/round2")
+def get_round2():
+    # Ensure results are loaded
+    if cache_stale("results"):
+        from scrapers.results import fetch_results
+        try:
+            _cache["results"]["data"]    = fetch_results()
+            _cache["results"]["updated"] = datetime.now()
+        except Exception as e:
+            app.logger.error(f"Results fetch failed: {e}")
+
+    results_data = _cache["results"]["data"]
+    status       = results_data.get("status", {})
+
+    if status.get("phase") == "pre_election":
+        return jsonify({"phase": "pre_election", "projections": {}})
+
+    city_results = results_data.get("results", {})
+    if not city_results:
+        return jsonify({"phase": status.get("phase", "unknown"), "projections": {}})
+
+    cpath = os.path.join(os.path.dirname(__file__), "data", "candidates.json")
+    with open(cpath, "r", encoding="utf-8") as f:
+        candidates_data = json.load(f)
+
+    from scrapers.round2 import get_round2_projections
+    projections = get_round2_projections(city_results, candidates_data)
+    return jsonify({"phase": status.get("phase"), "projections": projections})
+
+
 @app.route("/api/usage")
 def get_usage():
     from scrapers.usage import get_usage

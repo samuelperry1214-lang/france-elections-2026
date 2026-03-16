@@ -4,7 +4,8 @@
 
 let candidateData = null;
 let electionStatus = null;
-let liveResults = null;   // populated from /api/results when round1/round2
+let liveResults = null;     // populated from /api/results when round1/round2
+let round2Proj   = null;    // populated from /api/round2 (Claude tactical projections)
 let deptLayer = null;
 let majorCityMarkers = [];
 let newsItems = [];
@@ -312,8 +313,8 @@ function loadRaceResults(race) {
     });
 }
 
-// ── Live runoff helper (≥5% rule, French municipal elections) ─
-function buildLiveRunoff(cityResult) {
+// ── Live runoff helper (≥5% rule + Claude tactical projections) ─
+function buildLiveRunoff(cityResult, cityId, compact) {
   if (!cityResult?.lists?.length) return "";
 
   if (cityResult.winner) {
@@ -325,20 +326,49 @@ function buildLiveRunoff(cityResult) {
   const qualifiers = cityResult.lists.filter(l => l.pct >= 5.0);
   if (!qualifiers.length) return "";
 
-  const total = qualifiers.reduce((s, l) => s + l.pct, 0);
-  let html = `<div class="runoff-header">Round 2 Qualifiers</div><div class="runoff-bar">`;
-  qualifiers.forEach(l => {
-    const col   = PARTY_COLORS[l.party] || "#999";
-    const label = (l.label || "").length > 12 ? (l.label || "").slice(0, 12) + "…" : (l.label || l.party);
-    const w     = (l.pct / total * 100).toFixed(1);
-    html += `<div class="runoff-segment" style="width:${w}%;background:${col}">
-      <span>${label}</span><span>${l.pct}%</span>
+  let html = "";
+  const proj = round2Proj?.[cityId];
+
+  if (proj) {
+    // ── Claude tactical projection available ──
+    const wCol  = PARTY_COLORS[proj.winner_party]    || "#999";
+    const ruCol = PARTY_COLORS[proj.runner_up_party] || "#999";
+
+    html += `<div class="runoff-header">Round 2 Projection <span style="font-size:0.65rem;font-weight:400;opacity:.7">(tactical estimate)</span></div>`;
+    html += `<div class="runoff-bar">
+      <div class="runoff-segment" style="width:55%;background:${wCol}">
+        <span>${proj.projected_winner}</span><span>${proj.winner_pct_range}</span>
+      </div>
+      <div class="runoff-segment" style="width:45%;background:${ruCol}">
+        <span>${proj.runner_up}</span><span>${proj.runner_up_pct_range}</span>
+      </div>
     </div>`;
-  });
-  html += `</div>`;
-  html += `<p class="panel-note">${qualifiers.length > 2
-    ? `${qualifiers.length}-way Round 2 — 22 March`
-    : "Goes to Round 2 — 22 March"}</p>`;
+
+    if (proj.qualifiers_in_r2?.length > 2) {
+      html += `<p class="panel-note">${proj.qualifiers_in_r2.length}-way race: ${proj.qualifiers_in_r2.join(", ")}</p>`;
+    }
+
+    if (!compact && proj.key_dynamic) {
+      html += `<p class="panel-note" style="font-style:italic;border-left:2px solid ${wCol};padding-left:6px;margin-top:6px">${proj.key_dynamic}</p>`;
+    }
+  } else {
+    // ── Fallback: show Round 1 qualifiers proportionally ──
+    const total = qualifiers.reduce((s, l) => s + l.pct, 0);
+    html += `<div class="runoff-header">Round 2 Qualifiers (≥5%)</div><div class="runoff-bar">`;
+    qualifiers.forEach(l => {
+      const col   = PARTY_COLORS[l.party] || "#999";
+      const label = (l.label || "").length > 12 ? (l.label || "").slice(0, 12) + "…" : (l.label || l.party);
+      const w     = (l.pct / total * 100).toFixed(1);
+      html += `<div class="runoff-segment" style="width:${w}%;background:${col}">
+        <span>${label}</span><span>${l.pct}%</span>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<p class="panel-note">${qualifiers.length > 2
+      ? `${qualifiers.length}-way Round 2 — 22 March`
+      : "Goes to Round 2 — 22 March"}</p>`;
+  }
+
   return html;
 }
 
@@ -512,7 +542,7 @@ function buildRaceModalHTML(race) {
   if (cityResultForRunoff?.lists?.length) {
     html += `<div class="modal-section">
       <h4 class="modal-section-title">Round 2 Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">based on Round 1 results</span></h4>
-      ${buildLiveRunoff(cityResultForRunoff)}
+      ${buildLiveRunoff(cityResultForRunoff, race.id, false)}
     </div>`;
   } else if (polls && polls.round2_projection && polls.round2_projection.length) {
     const r2 = polls.round2_projection;
@@ -593,7 +623,7 @@ function buildRacePanelHTML(race) {
       </div>`;
     });
     html += `</div>`;
-    html += buildLiveRunoff(cityResult);
+    html += buildLiveRunoff(cityResult, race.id, true);
   } else {
     if (polls && polls.round1) {
       html += `<div class="panel-section-title">Round 1 Projection</div><div class="poll-bar-wrap">`;
@@ -1063,20 +1093,23 @@ async function init() {
   candidateData = await resp.json();
   loadDeptLayer();
 
-  // Load live results immediately; rebuild markers once we have them
-  fetch("/api/results")
-    .then(r => r.json())
-    .then(data => {
+  // Load live results + round 2 projections in parallel, then render
+  Promise.allSettled([
+    fetch("/api/results").then(r => r.json()),
+    fetch("/api/round2").then(r => r.json()),
+  ]).then(([resRes, r2Res]) => {
+    if (resRes.status === "fulfilled") {
+      const data = resRes.value;
       if (data.status?.phase !== "pre_election" && data.results) {
         liveResults = data.results;
       }
-      buildMayoralMarkers();
-      buildRacesGrid();
-    })
-    .catch(() => {
-      buildMayoralMarkers();
-      buildRacesGrid();
-    });
+    }
+    if (r2Res.status === "fulfilled" && r2Res.value.projections) {
+      round2Proj = r2Res.value.projections;
+    }
+    buildMayoralMarkers();
+    buildRacesGrid();
+  });
 
   startResultsPolling();
   loadNews();
