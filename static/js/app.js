@@ -507,6 +507,15 @@ function buildRaceModalHTML(race) {
   // Right column: polls + news
   html += `<div class="race-modal-right">`;
 
+  // Round 1 actual summary (from Claude round2 analysis)
+  const r1summary = round2Proj?.[race.id]?.round1_summary;
+  if (r1summary) {
+    html += `<div class="modal-section" style="border-left:3px solid var(--accent);padding-left:10px">
+      <h4 class="modal-section-title">Round 1 Result — What Happened</h4>
+      <p style="font-size:0.85rem;line-height:1.5">${r1summary}</p>
+    </div>`;
+  }
+
   // Round 1 polls
   if (polls && polls.round1) {
     html += `<div class="modal-section">
@@ -867,7 +876,7 @@ function updateStatusBadge(status) {
     badge.className   = "status-badge status-pre";
     noteEl.textContent = "Polling projections — not election results";
   } else if (status.phase === "round1") {
-    badge.textContent = "Round 1 Live";
+    badge.textContent = "Round 1 Complete — Round 2: 22 Mar";
     badge.className   = "status-badge status-round1";
     noteEl.textContent = "Live results — Round 1 counting";
   } else {
@@ -1139,8 +1148,7 @@ async function init() {
   });
 
   startResultsPolling();
-  loadNews();
-  setInterval(loadNews, 600000);
+  loadNews(); // load once on boot; manual refresh via button only
 }
 
 init();

@@ -119,6 +119,7 @@ Use these exact city IDs as keys: {json.dumps(city_ids)}
 
 Schema per city:
 {{
+  "round1_summary": "2-3 sentence plain-English summary of what actually happened in Round 1 — who led, surprises vs polls, how many qualify for Round 2",
   "projected_winner": "short name of winning list/candidate",
   "winner_party": "one of: PS RN LFI EELV LR Horizons DVD Reconquête Other",
   "winner_pct_range": "e.g. 51-56%",
@@ -126,7 +127,7 @@ Schema per city:
   "runner_up_party": "party key",
   "runner_up_pct_range": "e.g. 44-49%",
   "qualifiers_in_r2": ["list1 short name", "list2 short name"],
-  "key_dynamic": "2-3 sentence plain-English analysis of the decisive tactical dynamic"
+  "key_dynamic": "2-3 sentence plain-English analysis of the decisive tactical dynamic for Round 2"
 }}
 
 ROUND 1 DATA:

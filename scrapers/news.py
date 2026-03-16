@@ -15,10 +15,32 @@ paywalled full articles — we show the translated headline + RSS abstract.
 """
 
 import re
+import json
+import os
 import feedparser
 import requests
 from bs4 import BeautifulSoup
 from scrapers.translate import translate_to_english
+
+# ── Playbook translation cache ────────────────────────────────────────────────
+_PLAYBOOK_CACHE_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "data", "playbook_cache.json"
+)
+
+def _load_playbook_cache() -> dict:
+    try:
+        with open(_PLAYBOOK_CACHE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _save_playbook_cache(cache: dict):
+    try:
+        os.makedirs(os.path.dirname(_PLAYBOOK_CACHE_PATH), exist_ok=True)
+        with open(_PLAYBOOK_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(cache, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"[playbook] cache write error: {e}")
 
 HEADERS = {
     "User-Agent": (
@@ -657,10 +679,19 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
 
     print(f"[playbook] Total edition candidates: {len(edition_urls)}")
 
-    # 3. Fetch and translate each edition
+    # 3. Fetch and translate each edition — use cache for already-processed URLs
+    playbook_cache = _load_playbook_cache()
+    cache_dirty = False
+
     for url in edition_urls[:max_editions * 2]:
         if len(items) >= max_editions:
             break
+
+        # Return cached version if we've already translated this edition
+        if url in playbook_cache:
+            print(f"[playbook] cache hit: {url}")
+            items.append(playbook_cache[url])
+            continue
 
         edition = _fetch_playbook_edition(url)
         if not edition or (not edition["title"] and not edition["full_text"]):
@@ -677,12 +708,12 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
         if not summary_en:
             summary_en = _extract_summary(full_en, 250)
 
-        items.append({
+        item = {
             "source":         "Paris Playbook",
             "title":          title_en,
             "title_original": edition["title"],
             "summary":        summary_en,
-            "full_text":      full_en,          # full translated newsletter body
+            "full_text":      full_en,
             "link":           url,
             "published":      edition.get("date", ""),
             "color":          "#2980b9",
@@ -691,7 +722,14 @@ def scrape_paris_playbook(max_editions: int = 6) -> list:
             "paywall_note":   "",
             "is_playbook":    True,
             "ai_key_missing": ai_key_missing,
-        })
+        }
+        items.append(item)
+        playbook_cache[url] = item
+        cache_dirty = True
+        print(f"[playbook] cached new edition: {url}")
+
+    if cache_dirty:
+        _save_playbook_cache(playbook_cache)
 
     if not items:
         print("[playbook] No editions retrieved")
