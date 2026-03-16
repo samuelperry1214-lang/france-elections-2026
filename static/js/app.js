@@ -312,6 +312,36 @@ function loadRaceResults(race) {
     });
 }
 
+// ── Live runoff helper (≥5% rule, French municipal elections) ─
+function buildLiveRunoff(cityResult) {
+  if (!cityResult?.lists?.length) return "";
+
+  if (cityResult.winner) {
+    const col = PARTY_COLORS[cityResult.winner.party] || "#999";
+    return `<div class="runoff-header" style="color:${col}">Won in Round 1</div>
+      <p class="panel-note">${cityResult.winner.full_label || cityResult.winner.label} — ${cityResult.winner.pct}%</p>`;
+  }
+
+  const qualifiers = cityResult.lists.filter(l => l.pct >= 5.0);
+  if (!qualifiers.length) return "";
+
+  const total = qualifiers.reduce((s, l) => s + l.pct, 0);
+  let html = `<div class="runoff-header">Round 2 Qualifiers</div><div class="runoff-bar">`;
+  qualifiers.forEach(l => {
+    const col   = PARTY_COLORS[l.party] || "#999";
+    const label = (l.label || "").length > 12 ? (l.label || "").slice(0, 12) + "…" : (l.label || l.party);
+    const w     = (l.pct / total * 100).toFixed(1);
+    html += `<div class="runoff-segment" style="width:${w}%;background:${col}">
+      <span>${label}</span><span>${l.pct}%</span>
+    </div>`;
+  });
+  html += `</div>`;
+  html += `<p class="panel-note">${qualifiers.length > 2
+    ? `${qualifiers.length}-way Round 2 — 22 March`
+    : "Goes to Round 2 — 22 March"}</p>`;
+  return html;
+}
+
 function buildPollsVsResultsTable(polls, actuals, race) {
   const parties  = candidateData.parties;
   const hasActuals = actuals && actuals.length > 0;
@@ -368,37 +398,16 @@ function buildPollsVsResultsTable(polls, actuals, race) {
         </div>
       </td>
       <td class="actual-pct-cell">
-        ${hasActuals && actual
+        ${hasActuals && actual && actual.pct >= 1.0
           ? `<div class="mini-bar-wrap">
                <div class="mini-bar-fill" style="width:${actual.pct}%;background:${col}"></div>
-               <span><strong>${actual.pct}%</strong></span>
+               <span><strong>${actual.pct}%</strong>${actual.elected ? " ✓" : ""}</span>
              </div>`
           : `<span style="color:var(--text-muted);font-size:0.75rem;">—</span>`}
       </td>
     </tr>`;
   });
-
-  // Append any actual-result lists not matched to a poll candidate
-  if (hasActuals) {
-    const extras = actuals.filter(a => !matchedActuals.has(a.label));
-    extras.forEach(a => {
-      const col        = PARTY_COLORS[a.party] || "#999";
-      const displayName = a.full_label
-        ? (a.full_label.length > 50 ? a.full_label.slice(0, 50) + "…" : a.full_label)
-        : a.label;
-      html += `<tr>
-        <td style="font-size:0.82rem">${displayName}</td>
-        <td><span class="candidate-party" style="background:${col}">${a.party}</span></td>
-        <td class="poll-pct-cell"><span style="color:var(--text-muted);font-size:0.75rem;">not polled</span></td>
-        <td class="actual-pct-cell">
-          <div class="mini-bar-wrap">
-            <div class="mini-bar-fill" style="width:${a.pct}%;background:${col}"></div>
-            <span><strong>${a.pct}%</strong>${a.elected ? " ✓" : ""}</span>
-          </div>
-        </td>
-      </tr>`;
-    });
-  }
+  // No "not polled" rows shown — only polled candidates are displayed
 
   html += `</tbody></table>`;
   return html;
@@ -498,11 +507,17 @@ function buildRaceModalHTML(race) {
     </div>`;
   }
 
-  // Runoff projection
-  if (polls && polls.round2_projection && polls.round2_projection.length) {
+  // Runoff projection — use live results if available, else fall back to polls
+  const cityResultForRunoff = liveResults?.[race.id];
+  if (cityResultForRunoff?.lists?.length) {
+    html += `<div class="modal-section">
+      <h4 class="modal-section-title">Round 2 Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">based on Round 1 results</span></h4>
+      ${buildLiveRunoff(cityResultForRunoff)}
+    </div>`;
+  } else if (polls && polls.round2_projection && polls.round2_projection.length) {
     const r2 = polls.round2_projection;
     html += `<div class="modal-section">
-      <h4 class="modal-section-title">Runoff Projection</h4>
+      <h4 class="modal-section-title">Runoff Projection <span style="font-size:0.7rem;color:var(--text-muted);font-weight:400">(pre-election poll)</span></h4>
       <div class="runoff-bar">`;
     r2.forEach(p => {
       const col   = PARTY_COLORS[p.party] || "#999";
@@ -513,13 +528,11 @@ function buildRaceModalHTML(race) {
       </div>`;
     });
     html += `</div>`;
-
     const lead = Math.abs(r2[0].pct - (r2[1] ? r2[1].pct : 0));
     let compClass = "comp-safe", compLabel = "Likely " + r2[0].party;
     if (lead <= 4)  { compClass = "comp-tossup"; compLabel = "Toss-up"; }
     else if (lead <= 10) { compClass = "comp-likely"; compLabel = "Leans " + r2[0].party; }
     html += `<p class="race-card-competitiveness ${compClass}" style="margin-top:6px">${compLabel}</p>`;
-
     if (polls.note) html += `<p class="panel-note">${polls.note}</p>`;
     html += `</div>`;
   }
@@ -580,7 +593,7 @@ function buildRacePanelHTML(race) {
       </div>`;
     });
     html += `</div>`;
-    if (cityResult.round2_needed) html += `<p class="panel-note">No majority — Round 2: 22 March</p>`;
+    html += buildLiveRunoff(cityResult);
   } else {
     if (polls && polls.round1) {
       html += `<div class="panel-section-title">Round 1 Projection</div><div class="poll-bar-wrap">`;
