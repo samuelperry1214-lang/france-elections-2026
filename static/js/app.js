@@ -714,6 +714,12 @@ function resolveActualName(list, race) {
   const byAbbrev = polls.find(p => p.list_abbrev && p.list_abbrev === list.label);
   if (byAbbrev) return byAbbrev.candidate || byAbbrev.party;
 
+  // 1.5. Nuance code match — most reliable for non-Paris cities
+  if (list.nuance) {
+    const byNuance = polls.find(p => p.nuance === list.nuance && p.candidate && p.candidate !== "TBD");
+    if (byNuance) return byNuance.candidate;
+  }
+
   // 2. Poll candidate's last name appears in the full list label
   const fullLower = (list.full_label || list.label || "").toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -725,11 +731,7 @@ function resolveActualName(list, race) {
   });
   if (byName) return byName.candidate;
 
-  // 3. Party match → return candidate name from polls (avoids showing list slogans)
-  const byParty = polls.find(p => p.party === list.party && p.candidate && p.candidate !== "TBD");
-  if (byParty) return byParty.candidate;
-
-  // 4. Final fallback: truncated full label
+  // 3. Final fallback: truncated full label
   const lbl = list.full_label || list.label || list.party;
   return lbl.length > 30 ? lbl.slice(0, 30) + "…" : lbl;
 }
@@ -797,33 +799,77 @@ function buildRacesGrid() {
   const grid = document.getElementById("races-grid");
   grid.innerHTML = "";
   candidateData.major_races.forEach(race => {
-    const parties   = candidateData.parties;
-    const polls     = race.polls;
-    const incColor  = PARTY_COLORS[race.incumbent.party] || "#999";
-    const incShort  = (parties[race.incumbent.party] || { short: race.incumbent.party }).short;
+    const parties    = candidateData.parties;
+    const polls      = race.polls;
+    const cityResult = liveResults?.[race.id];
+    const incColor   = PARTY_COLORS[race.incumbent.party] || "#999";
+    const incShort   = (parties[race.incumbent.party] || { short: race.incumbent.party }).short;
 
-    let leader = { party: race.incumbent.party, pct: "—", candidate: race.incumbent.name };
-    if (polls?.round1?.length) leader = polls.round1.reduce((a, b) => a.pct > b.pct ? a : b);
-    const leaderColor = PARTY_COLORS[leader.party] || "#999";
-    const leaderShort = (parties[leader.party] || { short: leader.party }).short;
+    // Use live results if available, otherwise poll projections
+    let r1Lines = "", r2Line = "", compClass = "comp-safe", compLabel = "";
 
-    let compClass = "comp-safe", compLabel = "Safe";
-    if (polls?.round2_projection?.length >= 2) {
-      const lead = Math.abs(polls.round2_projection[0].pct - polls.round2_projection[1].pct);
-      if (lead <= 4)  { compClass = "comp-tossup"; compLabel = "Toss-up"; }
-      else if (lead <= 10) { compClass = "comp-likely"; compLabel = "Leans " + leaderShort; }
+    if (cityResult?.lists?.length) {
+      // Live Round 1 results
+      const top = cityResult.lists.slice(0, 3);
+      r1Lines = top.map(l => {
+        const col  = PARTY_COLORS[l.party] || "#999";
+        const name = resolveActualName(l, race).split(" ").slice(-1)[0];
+        return `<span style="color:${col};font-weight:700">${name}</span> ${l.pct}%${l.elected ? " ✓" : ""}`;
+      }).join(" &nbsp;·&nbsp; ");
+
+      if (cityResult.winner) {
+        r2Line = `<div class="race-card-pct" style="color:var(--accent)">Won outright in Round 1</div>`;
+      } else if (cityResult.round2_needed) {
+        // Show round 2 matchup from live qualifiers (≥5%)
+        const qualifiers = cityResult.lists.filter(l => l.pct >= 5);
+        const names = qualifiers.slice(0, 2).map(l => {
+          const col  = PARTY_COLORS[l.party] || "#999";
+          const name = resolveActualName(l, race).split(" ").slice(-1)[0];
+          return `<span style="color:${col};font-weight:700">${name}</span>`;
+        });
+        r2Line = `<div class="race-card-pct">Round 2 tonight: ${names.join(" vs ")}</div>`;
+
+        // Competitiveness from round2 poll projection
+        if (polls?.round2_projection?.length >= 2) {
+          const lead = Math.abs(polls.round2_projection[0].pct - polls.round2_projection[1].pct);
+          const r2Leader = polls.round2_projection[0];
+          const r2Short = (parties[r2Leader.party] || { short: r2Leader.party }).short;
+          if (lead <= 4)       { compClass = "comp-tossup"; compLabel = "Toss-up"; }
+          else if (lead <= 10) { compClass = "comp-likely"; compLabel = "Leans " + r2Short; }
+          else                 { compClass = "comp-safe";   compLabel = "Likely " + r2Short; }
+        }
+      }
+    } else {
+      // Pre-election: poll projections
+      const leader = polls?.round1?.length
+        ? polls.round1.reduce((a, b) => a.pct > b.pct ? a : b)
+        : { party: race.incumbent.party, pct: "—", candidate: race.incumbent.name };
+      const leaderColor = PARTY_COLORS[leader.party] || "#999";
+      const leaderShort = (parties[leader.party] || { short: leader.party }).short;
+      const lname = leader.candidate && leader.candidate !== "TBD"
+        ? leader.candidate.split(" ").slice(-1)[0] : "";
+      r1Lines = `<span style="color:${leaderColor};font-weight:700">${leaderShort}</span> ${lname} ${leader.pct}%`;
+
+      if (polls?.round2_projection?.length >= 2) {
+        const lead = Math.abs(polls.round2_projection[0].pct - polls.round2_projection[1].pct);
+        const r2p = polls.round2_projection;
+        const r2Short = (parties[r2p[0].party] || { short: r2p[0].party }).short;
+        if (lead <= 4)       { compClass = "comp-tossup"; compLabel = "Toss-up"; }
+        else if (lead <= 10) { compClass = "comp-likely"; compLabel = "Leans " + r2Short; }
+        else                 { compClass = "comp-safe";   compLabel = "Likely " + r2Short; }
+      }
     }
 
+    // Round 2 poll bar (always show from poll projection)
     let runoffBar = "";
     if (polls?.round2_projection) {
       runoffBar = `<div class="race-card-runoff">`;
       polls.round2_projection.forEach(p => {
-        runoffBar += `<div style="flex:${p.pct};background:${PARTY_COLORS[p.party] || '#999'}"></div>`;
+        runoffBar += `<div style="flex:${p.pct};background:${PARTY_COLORS[p.party] || '#999'}" title="${p.candidate || p.party} ${p.pct}%"></div>`;
       });
       runoffBar += `</div>`;
     }
 
-    // Macron note
     const me = race.macron_endorsement;
     const macronTag = me?.candidate
       ? `<div class="macron-tag" title="Macron/Renaissance backs ${me.candidate}">🏛 ${me.candidate}</div>`
@@ -837,13 +883,9 @@ function buildRacesGrid() {
         <span class="race-card-incumbent" style="background:${incColor}">${incShort}</span>
       </div>
       <div class="race-card-body">
-        <div class="race-card-leader">
-          <span style="color:${leaderColor};font-weight:800;">${leaderShort}</span>
-          ${leader.candidate && leader.candidate !== "TBD" ? " " + leader.candidate.split(" ").slice(-1)[0] : ""}
-        </div>
-        <div class="race-card-pct">Round 1 lead: ${leader.pct}%</div>
-        ${runoffBar}
-        <div class="race-card-competitiveness ${compClass}">${compLabel}</div>
+        <div class="race-card-leader">${r1Lines}</div>
+        ${r2Line || runoffBar}
+        ${compLabel ? `<div class="race-card-competitiveness ${compClass}">${compLabel}</div>` : ""}
         ${macronTag}
         <div class="race-card-cta">Click for full analysis →</div>
       </div>`;

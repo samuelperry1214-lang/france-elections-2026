@@ -80,10 +80,10 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",  "candidate": "Benoît Payan",     "pct": 35 },
-          { "party": "RN",  "candidate": "Franck Allisio",   "pct": 32 },
-          { "party": "LR",  "candidate": "Martine Vassal",   "pct": 18 },
-          { "party": "LFI", "candidate": "Sébastien Delogu", "pct": 13 },
+          { "party": "PS",  "candidate": "Benoît Payan",     "pct": 35, "nuance": "LUG"  },
+          { "party": "RN",  "candidate": "Franck Allisio",   "pct": 32, "nuance": "LRN"  },
+          { "party": "LR",  "candidate": "Martine Vassal",   "pct": 18, "nuance": "LUD"  },
+          { "party": "LFI", "candidate": "Sébastien Delogu", "pct": 13, "nuance": "LFI"  },
           { "party": "Other","candidate": "Others",          "pct": 2  }
         ],
         "round2_projection": [
@@ -119,11 +119,11 @@
       ],
       "polls": {
         "round1": [
-          { "party": "EELV", "candidate": "Grégory Doucet",         "pct": 29 },
-          { "party": "DVD",  "candidate": "Jean-Michel Aulas",       "pct": 27 },
-          { "party": "LFI",  "candidate": "Anaïs Belouassa-Cherifi", "pct": 18 },
-          { "party": "RN",   "candidate": "Alexandre Dupalais",      "pct": 16 },
-          { "party": "DVG",  "candidate": "Georges Képénékian",      "pct": 7  },
+          { "party": "EELV", "candidate": "Grégory Doucet",         "pct": 29, "nuance": "LUG"  },
+          { "party": "DVD",  "candidate": "Jean-Michel Aulas",       "pct": 27, "nuance": "LUC"  },
+          { "party": "LFI",  "candidate": "Anaïs Belouassa-Cherifi", "pct": 18, "nuance": "LFI"  },
+          { "party": "RN",   "candidate": "Alexandre Dupalais",      "pct": 16, "nuance": "LRN"  },
+          { "party": "DVG",  "candidate": "Georges Képénékian",      "pct": 7,  "nuance": "LDVG" },
           { "party": "Other","candidate": "Others",                  "pct": 3  }
         ],
         "round2_projection": [
@@ -158,10 +158,10 @@
       ],
       "polls": {
         "round1": [
-          { "party": "DVD",  "candidate": "Jean-Luc Moudenc",   "pct": 33 },
-          { "party": "PS",   "candidate": "François Briançon",  "pct": 30 },
-          { "party": "LFI",  "candidate": "François Piquemal",  "pct": 23 },
-          { "party": "RN",   "candidate": "Julien Leonardelli", "pct": 14 }
+          { "party": "DVD",  "candidate": "Jean-Luc Moudenc",   "pct": 33, "nuance": "LDVC" },
+          { "party": "PS",   "candidate": "François Briançon",  "pct": 30, "nuance": "LUG"  },
+          { "party": "LFI",  "candidate": "François Piquemal",  "pct": 23, "nuance": "LFI"  },
+          { "party": "RN",   "candidate": "Julien Leonardelli", "pct": 14, "nuance": "LRN"  }
         ],
         "round2_projection": [
           { "party": "DVD", "candidate": "Jean-Luc Moudenc",  "pct": 53 },
@@ -194,9 +194,9 @@
       ],
       "polls": {
         "round1": [
-          { "party": "UDR",     "candidate": "Éric Ciotti",       "pct": 38 },
-          { "party": "Horizons","candidate": "Christian Estrosi", "pct": 32 },
-          { "party": "PS",      "candidate": "TBD",               "pct": 18 },
+          { "party": "UDR",     "candidate": "Éric Ciotti",       "pct": 38, "nuance": "LUXD" },
+          { "party": "Horizons","candidate": "Christian Estrosi", "pct": 32, "nuance": "LUC"  },
+          { "party": "PS",      "candidate": "TBD",               "pct": 18, "nuance": "LUG"  },
           { "party": "Other",   "candidate": "Others",            "pct": 12 }
         ],
         "round2_projection": [
@@ -231,11 +231,11 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",  "candidate": "Johanna Rolland",          "pct": 36 },
-          { "party": "LR",  "candidate": "Foulques Chombart de Lauwe","pct": 28 },
-          { "party": "LFI", "candidate": "William Aucant",           "pct": 18 },
-          { "party": "RN",  "candidate": "Jean-Claude Hulot",        "pct": 14 },
-          { "party": "Other","candidate": "Others",                  "pct": 4  }
+          { "party": "PS",  "candidate": "Johanna Rolland",           "pct": 36, "nuance": "LUG"  },
+          { "party": "LR",  "candidate": "Foulques Chombart de Lauwe","pct": 28, "nuance": "LUC"  },
+          { "party": "LFI", "candidate": "William Aucant",            "pct": 18, "nuance": "LFI"  },
+          { "party": "RN",  "candidate": "Jean-Claude Hulot",         "pct": 14, "nuance": "LRN"  },
+          { "party": "Other","candidate": "Others",                   "pct": 4  }
         ],
         "round2_projection": [
           { "party": "PS",  "candidate": "Johanna Rolland",           "pct": 56 },
@@ -271,12 +271,12 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",      "candidate": "Catherine Trautmann",   "pct": 31 },
-          { "party": "EELV",    "candidate": "Jeanne Barseghian",     "pct": 20 },
-          { "party": "LR",      "candidate": "Jean-Philippe Vetter",  "pct": 19 },
-          { "party": "RN",      "candidate": "Virginie Joron",        "pct": 11 },
-          { "party": "LFI",     "candidate": "Florian Kobryn",        "pct": 10 },
-          { "party": "Horizons","candidate": "Pierre Jakubowicz",     "pct": 6  },
+          { "party": "PS",      "candidate": "Catherine Trautmann",   "pct": 31, "nuance": "LSOC" },
+          { "party": "EELV",    "candidate": "Jeanne Barseghian",     "pct": 20, "nuance": "LECO" },
+          { "party": "LR",      "candidate": "Jean-Philippe Vetter",  "pct": 19, "nuance": "LLR"  },
+          { "party": "RN",      "candidate": "Virginie Joron",        "pct": 11, "nuance": "LRN"  },
+          { "party": "LFI",     "candidate": "Florian Kobryn",        "pct": 10, "nuance": "LFI"  },
+          { "party": "Horizons","candidate": "Pierre Jakubowicz",     "pct": 6,  "nuance": "LUC"  },
           { "party": "Other",   "candidate": "Others",                "pct": 3  }
         ],
         "round2_projection": [
@@ -311,11 +311,11 @@
       ],
       "polls": {
         "round1": [
-          { "party": "EELV",        "candidate": "Pierre Hurmic",      "pct": 33 },
-          { "party": "Renaissance", "candidate": "Thomas Cazenave",    "pct": 25 },
-          { "party": "DVD",         "candidate": "Philippe Dessertine","pct": 15 },
-          { "party": "LFI",         "candidate": "Nordine Raymond",    "pct": 12 },
-          { "party": "RN",          "candidate": "TBD",                "pct": 10 },
+          { "party": "EELV",        "candidate": "Pierre Hurmic",      "pct": 33, "nuance": "LUG"  },
+          { "party": "Renaissance", "candidate": "Thomas Cazenave",    "pct": 25, "nuance": "LUC"  },
+          { "party": "DVD",         "candidate": "Philippe Dessertine","pct": 15, "nuance": "LDVC" },
+          { "party": "LFI",         "candidate": "Nordine Raymond",    "pct": 12, "nuance": "LFI"  },
+          { "party": "RN",          "candidate": "TBD",                "pct": 10, "nuance": "LRN"  },
           { "party": "Other",       "candidate": "Others",             "pct": 5  }
         ],
         "round2_projection": [
@@ -350,10 +350,10 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",   "candidate": "Michaël Delafosse", "pct": 34 },
-          { "party": "RN",   "candidate": "TBD",               "pct": 28 },
-          { "party": "LFI",  "candidate": "TBD",               "pct": 15 },
-          { "party": "LR",   "candidate": "TBD",               "pct": 14 },
+          { "party": "PS",   "candidate": "Michaël Delafosse", "pct": 34, "nuance": "LUG"  },
+          { "party": "RN",   "candidate": "TBD",               "pct": 28, "nuance": "LRN"  },
+          { "party": "LFI",  "candidate": "TBD",               "pct": 15, "nuance": "LFI"  },
+          { "party": "LR",   "candidate": "TBD",               "pct": 14, "nuance": "LLR"  },
           { "party": "Other","candidate": "Others",            "pct": 9  }
         ],
         "round2_projection": [
@@ -389,12 +389,12 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",          "candidate": "Arnaud Deslandes",    "pct": 28 },
-          { "party": "Renaissance", "candidate": "Violette Spillebout", "pct": 22 },
-          { "party": "EELV",        "candidate": "Stéphane Baly",       "pct": 18 },
-          { "party": "LR",          "candidate": "Louis Delemer",       "pct": 14 },
-          { "party": "RN",          "candidate": "Matthieu Valet",      "pct": 12 },
-          { "party": "LFI",         "candidate": "Lahouaria Addouche",  "pct": 6  }
+          { "party": "PS",          "candidate": "Arnaud Deslandes",    "pct": 28, "nuance": "LUG"  },
+          { "party": "Renaissance", "candidate": "Violette Spillebout", "pct": 22, "nuance": "LUC"  },
+          { "party": "EELV",        "candidate": "Stéphane Baly",       "pct": 18, "nuance": "LECO" },
+          { "party": "LR",          "candidate": "Louis Delemer",       "pct": 14, "nuance": "LLR"  },
+          { "party": "RN",          "candidate": "Matthieu Valet",      "pct": 12, "nuance": "LRN"  },
+          { "party": "LFI",         "candidate": "Lahouaria Addouche",  "pct": 6,  "nuance": "LFI"  }
         ],
         "round2_projection": [
           { "party": "PS",          "candidate": "Arnaud Deslandes",    "pct": 51 },
@@ -429,11 +429,11 @@
       ],
       "polls": {
         "round1": [
-          { "party": "PS",      "candidate": "Nathalie Appéré", "pct": 38 },
-          { "party": "LFI",     "candidate": "Marie Mesmeur",   "pct": 18 },
-          { "party": "Horizons","candidate": "Carole Gandon",   "pct": 16 },
-          { "party": "LR",      "candidate": "Thomas Rousseau", "pct": 14 },
-          { "party": "RN",      "candidate": "Julien Masson",   "pct": 10 },
+          { "party": "PS",      "candidate": "Nathalie Appéré", "pct": 38, "nuance": "LUG"  },
+          { "party": "LFI",     "candidate": "Marie Mesmeur",   "pct": 18, "nuance": "LFI"  },
+          { "party": "Horizons","candidate": "Carole Gandon",   "pct": 16, "nuance": "LUC"  },
+          { "party": "LR",      "candidate": "Thomas Rousseau", "pct": 14, "nuance": "LLR"  },
+          { "party": "RN",      "candidate": "Julien Masson",   "pct": 10, "nuance": "LRN"  },
           { "party": "Other",   "candidate": "Others",          "pct": 4  }
         ],
         "round2_projection": [
@@ -468,11 +468,11 @@
       ],
       "polls": {
         "round1": [
-          { "party": "EELV",    "candidate": "Laurence Ruffin", "pct": 32 },
-          { "party": "LR",      "candidate": "Alain Carignon",  "pct": 26 },
-          { "party": "LFI",     "candidate": "Allan Brunon",    "pct": 16 },
-          { "party": "Horizons","candidate": "Hervé Gerbi",     "pct": 13 },
-          { "party": "RN",      "candidate": "Valentin Gabriac","pct": 11 },
+          { "party": "EELV",    "candidate": "Laurence Ruffin", "pct": 32, "nuance": "LUG"  },
+          { "party": "LR",      "candidate": "Alain Carignon",  "pct": 26, "nuance": "LLR"  },
+          { "party": "LFI",     "candidate": "Allan Brunon",    "pct": 16, "nuance": "LFI"  },
+          { "party": "Horizons","candidate": "Hervé Gerbi",     "pct": 13, "nuance": "LUC"  },
+          { "party": "RN",      "candidate": "Valentin Gabriac","pct": 11, "nuance": "LRN"  },
           { "party": "Other",   "candidate": "Others",          "pct": 2  }
         ],
         "round2_projection": [
