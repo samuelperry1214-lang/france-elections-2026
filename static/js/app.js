@@ -314,7 +314,7 @@ function loadRaceResults(race) {
 }
 
 // ── Live runoff helper (≥5% rule + Claude tactical projections) ─
-function buildLiveRunoff(cityResult, cityId, compact) {
+function buildLiveRunoff(cityResult, cityId, compact, race) {
   if (!cityResult?.lists?.length) return "";
 
   if (cityResult.winner) {
@@ -357,7 +357,7 @@ function buildLiveRunoff(cityResult, cityId, compact) {
     html += `<div class="runoff-header">Round 2 Qualifiers (≥5%)</div><div class="runoff-bar">`;
     qualifiers.forEach(l => {
       const col   = PARTY_COLORS[l.party] || "#999";
-      const label = (l.label || "").length > 12 ? (l.label || "").slice(0, 12) + "…" : (l.label || l.party);
+      const label = race ? resolveActualName(l, race) : ((l.label || "").length > 20 ? (l.label || "").slice(0, 20) + "…" : (l.label || l.party));
       const w     = (l.pct / total * 100).toFixed(1);
       html += `<div class="runoff-segment" style="width:${w}%;background:${col}">
         <span>${label}</span><span>${l.pct}%</span>
@@ -516,19 +516,26 @@ function buildRaceModalHTML(race) {
     </div>`;
   }
 
-  // Round 1 polls
-  if (polls && polls.round1) {
+  // Round 2 projection — use live results if available, else fall back to poll projection
+  const cityResultForRunoff = liveResults?.[race.id];
+  if (cityResultForRunoff?.lists?.length) {
     html += `<div class="modal-section">
-      <h4 class="modal-section-title">Round 1 Projection</h4>
+      <h4 class="modal-section-title">Round 2 Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">based on Round 1 results</span></h4>
+      ${buildLiveRunoff(cityResultForRunoff, race.id, false, race)}
+    </div>`;
+  } else if (polls && polls.round2_projection && polls.round2_projection.length) {
+    const r2 = polls.round2_projection;
+    html += `<div class="modal-section">
+      <h4 class="modal-section-title">Round 2 Poll Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">tonight's runoff</span></h4>
       <div class="poll-bar-wrap">`;
-    const sorted = [...polls.round1].sort((a, b) => b.pct - a.pct);
-    sorted.forEach(p => {
+    r2.forEach(p => {
       const col   = PARTY_COLORS[p.party] || "#999";
       const short = (parties[p.party] || { short: p.party }).short;
+      const name  = p.candidate && p.candidate !== "TBD" ? p.candidate : p.party;
       html += `<div class="poll-bar-row">
         <div class="poll-bar-label">
-          <span style="color:${col};font-weight:700;">${short}</span>
-          ${p.candidate && p.candidate !== "TBD" ? " " + p.candidate.split(" ").slice(-1)[0] : ""}
+          <span style="font-weight:700">${name}</span>
+          <span style="display:inline-block;background:${col};color:#fff;font-size:0.65rem;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px">${short}</span>
         </div>
         <div class="poll-bar-track">
           <div class="poll-bar-fill" style="width:${p.pct}%;background:${col}"></div>
@@ -542,36 +549,7 @@ function buildRaceModalHTML(race) {
         ${polls.methodology ? `<br><span style="font-size:0.68rem;color:var(--text-muted)">${polls.methodology}</span>` : ""}
         ${polls.date ? ` · ${polls.date}` : ""}
         ${polls.margin_of_error ? ` · ±${polls.margin_of_error}%` : ""}
-      </p>
-    </div>`;
-  }
-
-  // Runoff projection — use live results if available, else fall back to polls
-  const cityResultForRunoff = liveResults?.[race.id];
-  if (cityResultForRunoff?.lists?.length) {
-    html += `<div class="modal-section">
-      <h4 class="modal-section-title">Round 2 Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">based on Round 1 results</span></h4>
-      ${buildLiveRunoff(cityResultForRunoff, race.id, false)}
-    </div>`;
-  } else if (polls && polls.round2_projection && polls.round2_projection.length) {
-    const r2 = polls.round2_projection;
-    html += `<div class="modal-section">
-      <h4 class="modal-section-title">Runoff Projection <span style="font-size:0.7rem;color:var(--text-muted);font-weight:400">(pre-election poll)</span></h4>
-      <div class="runoff-bar">`;
-    r2.forEach(p => {
-      const col   = PARTY_COLORS[p.party] || "#999";
-      const label = p.candidate && p.candidate !== "TBD"
-        ? p.candidate.split(" ").slice(-1)[0] : p.party;
-      html += `<div class="runoff-segment" style="width:${p.pct}%;background:${col}">
-        <span>${label}</span><span>${p.pct}%</span>
-      </div>`;
-    });
-    html += `</div>`;
-    const lead = Math.abs(r2[0].pct - (r2[1] ? r2[1].pct : 0));
-    let compClass = "comp-safe", compLabel = "Likely " + r2[0].party;
-    if (lead <= 4)  { compClass = "comp-tossup"; compLabel = "Toss-up"; }
-    else if (lead <= 10) { compClass = "comp-likely"; compLabel = "Leans " + r2[0].party; }
-    html += `<p class="race-card-competitiveness ${compClass}" style="margin-top:6px">${compLabel}</p>`;
+      </p>`;
     if (polls.note) html += `<p class="panel-note">${polls.note}</p>`;
     html += `</div>`;
   }
@@ -632,15 +610,19 @@ function buildRacePanelHTML(race) {
       </div>`;
     });
     html += `</div>`;
-    html += buildLiveRunoff(cityResult, race.id, true);
+    html += buildLiveRunoff(cityResult, race.id, true, race);
   } else {
     if (polls && polls.round1) {
-      html += `<div class="panel-section-title">Round 1 Projection</div><div class="poll-bar-wrap">`;
+      html += `<div class="panel-section-title">Round 1 Polls</div><div class="poll-bar-wrap">`;
       [...polls.round1].sort((a,b) => b.pct - a.pct).forEach(p => {
         const col   = PARTY_COLORS[p.party] || "#999";
         const short = (parties[p.party] || { short: p.party }).short;
+        const cname = p.candidate && p.candidate !== "TBD" ? p.candidate.split(" ").slice(-1)[0] : "";
         html += `<div class="poll-bar-row">
-          <div class="poll-bar-label" style="color:${col};font-weight:700;">${short}</div>
+          <div class="poll-bar-label">
+            ${cname ? `<span style="font-weight:700">${cname}</span> ` : ""}
+            <span style="display:inline-block;background:${col};color:#fff;font-size:0.6rem;padding:1px 4px;border-radius:3px;vertical-align:middle">${short}</span>
+          </div>
           <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${p.pct}%;background:${col}"></div></div>
           <div class="poll-bar-pct">${p.pct}%</div>
         </div>`;
@@ -743,7 +725,11 @@ function resolveActualName(list, race) {
   });
   if (byName) return byName.candidate;
 
-  // 3. Fallback: truncated full label
+  // 3. Party match → return candidate name from polls (avoids showing list slogans)
+  const byParty = polls.find(p => p.party === list.party && p.candidate && p.candidate !== "TBD");
+  if (byParty) return byParty.candidate;
+
+  // 4. Final fallback: truncated full label
   const lbl = list.full_label || list.label || list.party;
   return lbl.length > 30 ? lbl.slice(0, 30) + "…" : lbl;
 }

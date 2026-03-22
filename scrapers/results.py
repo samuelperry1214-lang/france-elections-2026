@@ -77,13 +77,16 @@ def _get_csv_url(title_fragment: str) -> str | None:
     try:
         resp = requests.get(API_URL, timeout=10)
         resources = resp.json().get("resources", [])
-        match = next(
-            (r for r in resources
-             if r.get("format", "").lower() == "csv"
-             and title_fragment.lower() in r.get("title", "").lower()),
-            None,
-        )
-        return match["url"] if match else None
+        # Filter to matching CSVs, prefer the most recently created one
+        matches = [
+            r for r in resources
+            if r.get("format", "").lower() == "csv"
+            and title_fragment.lower() in r.get("title", "").lower()
+        ]
+        if not matches:
+            return None
+        matches.sort(key=lambda r: r.get("created_at", ""), reverse=True)
+        return matches[0]["url"]
     except Exception:
         return None
 
@@ -157,8 +160,8 @@ def _parse_communes_csv(url: str) -> dict:
     return results
 
 
-# Known fallback URL (discovered 2026-03-16)
-_FALLBACK_CSV = (
+# Known fallback URLs by round
+_FALLBACK_R1_CSV = (
     "https://static.data.gouv.fr/resources/"
     "elections-municipales-2026-resultats-du-premier-tour/"
     "20260316-160646/municipales-2026-resultats-communes-2026-03-16.csv"
@@ -170,7 +173,11 @@ def fetch_results() -> dict:
     if status["phase"] == "pre_election":
         return {"status": status, "results": {}}
 
-    csv_url = _get_csv_url("résultats - communes") or _FALLBACK_CSV
+    # For round 2, try the most recent communes CSV from the dataset (government
+    # will add a new resource tonight). Fall back to round 1 only if needed.
+    csv_url = _get_csv_url("résultats - communes")
+    if not csv_url:
+        csv_url = _FALLBACK_R1_CSV
     results = _parse_communes_csv(csv_url)
     return {
         "status": status,
