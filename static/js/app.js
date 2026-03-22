@@ -251,9 +251,10 @@ function openRaceModal(race) {
 }
 
 function loadRaceResults(race) {
-  const container = document.getElementById(`results-tracker-${race.id}`);
-  const badge     = document.getElementById(`results-badge-${race.id}`);
-  if (!container) return;
+  const r1container = document.getElementById(`results-tracker-r1-${race.id}`);
+  const r2container = document.getElementById(`results-tracker-r2-${race.id}`);
+  const badge       = document.getElementById(`results-badge-${race.id}`);
+  if (!r1container) return;
 
   fetch("/api/results")
     .then(r => r.json())
@@ -261,55 +262,80 @@ function loadRaceResults(race) {
       const phase = data.status?.phase || "pre_election";
 
       if (phase === "pre_election") {
-        container.innerHTML = `<p class="results-pre-note">
+        const msg = `<p class="results-pre-note">
           Round 1 is today (15 March). Live results from
           <a href="https://www.data.gouv.fr" target="_blank" rel="noopener noreferrer">data.gouv.fr</a>
           will appear here automatically as counting progresses — this section refreshes every 5 minutes.
         </p>`;
-        // Schedule re-check
+        if (r1container) r1container.innerHTML = msg;
+        if (r2container) r2container.innerHTML = `<p class="results-pre-note">Round 2 is 22 March — results will appear here on the night.</p>`;
         setTimeout(() => loadRaceResults(race), 300000);
         return;
       }
 
-      // Results are live — show polls-vs-actual comparison table
-      const polls = race.polls?.round1 || [];
+      // Results API has live data — show R1 and R2 tables
+      const r1polls  = race.polls?.round1 || [];
+      const r2polls  = race.polls?.round2_projection || [];
       const cityData = data.results?.[race.id];
       const cityLists = cityData?.lists || [];
+
       if (badge) {
         badge.textContent = "LIVE";
         badge.className   = "results-source-badge live";
       }
 
+      // ── Round 1 table ──
       if (!cityLists.length) {
-        container.innerHTML = `<p class="results-pre-note">
+        r1container.innerHTML = `<p class="results-pre-note">
           <strong>Counting in progress.</strong>
           Data not yet published for ${race.name} —
           <a href="https://www.data.gouv.fr" target="_blank" rel="noopener noreferrer">data.gouv.fr</a>
           is the primary source. Refreshing every 5 minutes.
-        </p>
-        ${buildPollsVsResultsTable(polls, [], race)}`;
-        setTimeout(() => loadRaceResults(race), 300000);
-        return;
+        </p>${buildPollsVsResultsTable(r1polls, [], race)}`;
+      } else {
+        let r1extra = "";
+        if (cityData?.winner) {
+          const wCol = PARTY_COLORS[cityData.winner.party] || "#999";
+          r1extra = `<p class="results-winner-note" style="border-left:3px solid ${wCol};padding-left:8px;margin-top:8px">
+            <strong style="color:${wCol}">Elected in Round 1:</strong> ${cityData.winner.label} — ${cityData.winner.pct}%
+          </p>`;
+        } else if (cityData?.round2_needed) {
+          r1extra = `<p class="results-pre-note"><strong>No majority — Round 2 required (22 March)</strong></p>`;
+        }
+        if (cityData) {
+          r1extra += `<p class="poll-source">Turnout: ${cityData.turnout_pct}% &nbsp;·&nbsp; Source: ${data.source || "data.gouv.fr"}</p>`;
+        }
+        r1container.innerHTML = buildPollsVsResultsTable(r1polls, cityLists, race) + r1extra;
       }
 
-      let extra = "";
-      if (cityData?.winner) {
-        const wCol = PARTY_COLORS[cityData.winner.party] || "#999";
-        extra = `<p class="results-winner-note" style="border-left:3px solid ${wCol};padding-left:8px;margin-top:8px">
-          <strong style="color:${wCol}">Elected in Round 1:</strong> ${cityData.winner.label} — ${cityData.winner.pct}%
-        </p>`;
-      } else if (cityData?.round2_needed) {
-        extra = `<p class="results-pre-note"><strong>No majority — Round 2 required (22 March)</strong></p>`;
-      }
-      if (cityData) {
-        extra += `<p class="poll-source">Turnout: ${cityData.turnout_pct}% &nbsp;·&nbsp; Source: ${data.source || "data.gouv.fr"}</p>`;
+      // ── Round 2 table ──
+      if (r2container) {
+        if (phase === "round2") {
+          // Fetch round2 endpoint for actual R2 results — for now the results API
+          // still returns R1 data; R2 data will arrive from the same endpoint once
+          // Interior publishes the round2 CSV.  We show R2 polls vs R2 actuals.
+          fetch("/api/round2")
+            .then(r => r.json())
+            .then(r2data => {
+              const proj = r2data.projections?.[race.id];
+              // R2 actual lists: not yet in results API — placeholder until data arrives
+              r2container.innerHTML = buildPollsVsResultsTable(r2polls, [], race) +
+                `<p class="results-pre-note" style="margin-top:6px">
+                  Round 2 results will populate automatically once the Interior Ministry publishes tonight's data.
+                </p>`;
+            })
+            .catch(() => {
+              r2container.innerHTML = buildPollsVsResultsTable(r2polls, [], race);
+            });
+        } else {
+          r2container.innerHTML = `<p class="results-pre-note">Round 2 is 22 March — results will appear here on the night.</p>`;
+        }
       }
 
-      container.innerHTML = buildPollsVsResultsTable(polls, cityLists, race) + extra;
       setTimeout(() => loadRaceResults(race), 300000);
     })
     .catch(() => {
-      if (container) container.innerHTML = `<p class="results-pre-note">Could not reach results API.</p>`;
+      if (r1container) r1container.innerHTML = `<p class="results-pre-note">Could not reach results API.</p>`;
     });
 }
 
@@ -516,51 +542,30 @@ function buildRaceModalHTML(race) {
     </div>`;
   }
 
-  // Round 2 projection — use live results if available, else fall back to poll projection
-  const cityResultForRunoff = liveResults?.[race.id];
-  if (cityResultForRunoff?.lists?.length) {
-    html += `<div class="modal-section">
-      <h4 class="modal-section-title">Round 2 Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">based on Round 1 results</span></h4>
-      ${buildLiveRunoff(cityResultForRunoff, race.id, false, race)}
+  // Round 2 background — what to watch tonight
+  const r2dynamic = round2Proj?.[race.id]?.key_dynamic;
+  if (r2dynamic) {
+    html += `<div class="modal-section" style="border-left:3px solid var(--accent-2,#e67e22);padding-left:10px">
+      <h4 class="modal-section-title">Round 2 — What to Watch Tonight</h4>
+      <p style="font-size:0.85rem;line-height:1.5">${r2dynamic}</p>
     </div>`;
-  } else if (polls && polls.round2_projection && polls.round2_projection.length) {
-    const r2 = polls.round2_projection;
-    html += `<div class="modal-section">
-      <h4 class="modal-section-title">Round 2 Poll Projection <span style="font-size:0.7rem;color:var(--accent);font-weight:400">tonight's runoff</span></h4>
-      <div class="poll-bar-wrap">`;
-    r2.forEach(p => {
-      const col   = PARTY_COLORS[p.party] || "#999";
-      const short = (parties[p.party] || { short: p.party }).short;
-      const name  = p.candidate && p.candidate !== "TBD" ? p.candidate : p.party;
-      html += `<div class="poll-bar-row">
-        <div class="poll-bar-label">
-          <span style="font-weight:700">${name}</span>
-          <span style="display:inline-block;background:${col};color:#fff;font-size:0.65rem;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px">${short}</span>
-        </div>
-        <div class="poll-bar-track">
-          <div class="poll-bar-fill" style="width:${p.pct}%;background:${col}"></div>
-        </div>
-        <div class="poll-bar-pct">${p.pct}%</div>
-      </div>`;
-    });
-    html += `</div>
-      <p class="poll-source">
-        ${polls.source ? `<strong>${polls.source}</strong>${polls.commissioned_by ? `, commissioned by ${polls.commissioned_by}` : ""}` : ""}
-        ${polls.methodology ? `<br><span style="font-size:0.68rem;color:var(--text-muted)">${polls.methodology}</span>` : ""}
-        ${polls.date ? ` · ${polls.date}` : ""}
-        ${polls.margin_of_error ? ` · ±${polls.margin_of_error}%` : ""}
-      </p>`;
-    if (polls.note) html += `<p class="panel-note">${polls.note}</p>`;
-    html += `</div>`;
   }
 
-  // Live results tracker (shown on election night)
+  // Round 1 results table
   html += `<div class="modal-section">
-    <h4 class="modal-section-title">Live Results
+    <h4 class="modal-section-title">Round 1 Results
       <span class="results-source-badge" id="results-badge-${race.id}"></span>
     </h4>
-    <div id="results-tracker-${race.id}" class="results-tracker">
+    <div id="results-tracker-r1-${race.id}" class="results-tracker">
       <div class="results-loading"><div class="spinner"></div><p>Checking for results…</p></div>
+    </div>
+  </div>`;
+
+  // Round 2 results table
+  html += `<div class="modal-section">
+    <h4 class="modal-section-title">Round 2 Results <span style="font-size:0.7rem;color:var(--text-muted);font-weight:400">tonight</span></h4>
+    <div id="results-tracker-r2-${race.id}" class="results-tracker">
+      <div class="results-loading"><div class="spinner"></div><p>Awaiting results…</p></div>
     </div>
   </div>`;
 
